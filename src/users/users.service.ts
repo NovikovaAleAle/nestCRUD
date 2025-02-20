@@ -23,7 +23,6 @@ export class UsersService {
       messages: [{ value: `User ${JSON.stringify(user.id)} created.` }],
     });
     this.logger.log('User creation message sent');
-    console.log('Console.log: User creation message sent');
     await producer.disconnect();
     this.logger.log(`User id:${user.id} created`);
   }

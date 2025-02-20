@@ -6,7 +6,7 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule, {
       logger: new ConsoleLogger({
-        prefix: 'nestCURD',
+        prefix: 'nestCRUD',
         logLevels: ['log', 'warn', 'error'],
         timestamp: true,
       }),

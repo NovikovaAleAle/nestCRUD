@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Patch,
+  Logger,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserDto } from './dto/user.dto';
@@ -15,6 +16,8 @@ import { ErrorNotFound } from './error/error-not-found';
 
 @Controller('users')
 export class UsersController {
+  private readonly logger = new Logger(UsersController.name);
+
   constructor(private usersService: UsersService) {}
 
   @Post()
@@ -23,6 +26,7 @@ export class UsersController {
       await this.usersService.create(userDto);
       return 'User created';
     } catch (error) {
+      this.logger.error(error);
       throw errorsHandler(error as Error);
     }
   }
@@ -33,6 +37,7 @@ export class UsersController {
       const users: User[] = await this.usersService.findAll();
       return users;
     } catch (error) {
+      this.logger.error(error);
       throw errorsHandler(error as Error);
     }
   }
@@ -44,6 +49,7 @@ export class UsersController {
       const user: User = await this.usersService.findId(idParam);
       return user;
     } catch (error) {
+      this.logger.error(`User id:${id} findId, ${error}`);
       throw errorsHandler(error as Error | ErrorNotFound);
     }
   }
@@ -55,6 +61,7 @@ export class UsersController {
       await this.usersService.deleteId(idParam);
       return 'User deleted';
     } catch (error) {
+      this.logger.error(`User id:${id} deleteId, ${error}`);
       throw errorsHandler(error as Error | ErrorNotFound);
     }
   }
@@ -69,6 +76,7 @@ export class UsersController {
       await Promise.resolve(this.usersService.updateId(idParam, updateUserDto));
       return 'User updated';
     } catch (error) {
+      this.logger.error(`User id:${id} updateId, ${error}`);
       throw errorsHandler(error as Error | ErrorNotFound);
     }
   }

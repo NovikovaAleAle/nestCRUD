@@ -9,21 +9,31 @@ import {
   Logger,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { UserDto } from './dto/user.dto';
+import { CreateUserDto } from './dto/create.user.dto';
+import { UpdateUserDto } from './dto/update.user.dto';
 import { User } from './user.entity';
 import { errorsHandler } from './error/errors.handler';
 import { ErrorNotFound } from './error/error-not-found';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
   constructor(private usersService: UsersService) {}
 
+  @ApiOperation({ summary: 'Create user' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({
+    status: 200,
+    description: 'User creation message',
+    type: String,
+  })
   @Post()
-  async create(@Body() userDto: UserDto): Promise<string> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<string> {
     try {
-      await this.usersService.create(userDto);
+      await this.usersService.create(createUserDto);
       return 'User created';
     } catch (error) {
       this.logger.error(error);
@@ -31,6 +41,12 @@ export class UsersController {
     }
   }
 
+  @ApiOperation({ summary: 'Search for all users' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found records',
+    type: [User],
+  })
   @Get()
   async findAll(): Promise<User[]> {
     try {
@@ -42,6 +58,12 @@ export class UsersController {
     }
   }
 
+  @ApiOperation({ summary: 'Search the user by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'The found record',
+    type: User,
+  })
   @Get(':id')
   async findId(@Param('id') id: string): Promise<User> {
     try {
@@ -54,6 +76,12 @@ export class UsersController {
     }
   }
 
+  @ApiOperation({ summary: 'Delete the user by id' })
+  @ApiResponse({
+    status: 200,
+    description: 'User delete message',
+    type: String,
+  })
   @Delete(':id')
   async deleteId(@Param('id') id: string): Promise<string> {
     try {
@@ -66,10 +94,17 @@ export class UsersController {
     }
   }
 
+  @ApiOperation({ summary: 'Update the user by id' })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiResponse({
+    status: 200,
+    description: 'User update message',
+    type: String,
+  })
   @Patch(':id')
   async updateId(
     @Param('id') id: string,
-    @Body() updateUserDto: Partial<UserDto>,
+    @Body() updateUserDto: UpdateUserDto,
   ): Promise<string> {
     try {
       const idParam: number = parseInt(id);

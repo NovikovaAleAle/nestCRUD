@@ -4,7 +4,7 @@ import { Repository, DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { ErrorNotFound } from './error/error-not-found';
 import { producer } from '../config/kafka.config';
-import { UserDto } from './dto/user.dto';
+import { CreateUserDto } from './dto/create.user.dto';
 
 @Injectable()
 export class UsersService {
@@ -15,8 +15,8 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(userDto: UserDto): Promise<void> {
-    const user: User = await this.usersRepository.save(userDto);
+  async create(createUserDto: CreateUserDto): Promise<void> {
+    const user: User = await this.usersRepository.save(createUserDto);
     await producer.connect();
     await producer.send({
       topic: 'test-topic',

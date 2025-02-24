@@ -10,13 +10,45 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data/pgdata
+      - pg-data:/var/lib/postgresql/data/pgdata
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgre -d pg-db" ]
       interval: 30s
       timeout: 10s
       retries: 5
-    restart: unless-stopped  
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512MB
+    networks:
+      - postgres
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: mymail@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512MB
+    networks:
+      - postgres
+
 volumes:
-  pgdata:
-  
+  pg-data:
+  pgadmin-data:
+
+networks:
+  postgres:
+    driver: bridge

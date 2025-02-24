@@ -31,16 +31,20 @@ describe('UsersController', () => {
         {
           provide: getRepositoryToken(User),
           useValue: {
-            save: jest.fn(() => {}),
-            find: jest.fn(() => users),
-            findOneBy: jest.fn(),
-            delete: jest.fn(),
+            save: jest.fn(() => Promise.resolve({})),
+            createQueryBuilder: () => ({
+              skip: jest.fn().mockReturnThis(),
+              take: jest.fn().mockReturnThis(),
+              getMany: jest.fn(() => Promise.resolve(users)),
+            }),
+            findOneBy: jest.fn(() => Promise.resolve({})),
+            delete: jest.fn(() => Promise.resolve({})),
           },
         },
       ],
     }).compile();
-    usersService = await module.resolve(UsersService);
-    usersRepository = await module.resolve(getRepositoryToken(User));
+    usersService = await module.get(UsersService);
+    usersRepository = await module.get(getRepositoryToken(User));
   });
 
   describe('create', () => {
@@ -54,13 +58,12 @@ describe('UsersController', () => {
     });
   });
 
-  describe('findAll', () => {
+  describe('findAllWithPagination', () => {
     it('should found all users', async () => {
-      //jest.spyOn(usersRepository, 'find').mockResolvedValue(users);
-
-      const result: User[] = await usersService.findAll();
-
-      expect(usersRepository.find).toHaveBeenCalledWith();
+      const result: User[] = await usersService.findAllWithPagination(
+        1,
+        users.length,
+      );
       expect(result).toEqual(users);
     });
   });

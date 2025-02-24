@@ -1,5 +1,6 @@
 import {
   Body,
+  Query,
   Controller,
   Get,
   Post,
@@ -41,16 +42,22 @@ export class UsersController {
     }
   }
 
-  @ApiOperation({ summary: 'Search for all users' })
+  @ApiOperation({ summary: 'Search for all users with pagination' })
   @ApiResponse({
     status: 200,
     description: 'The found records',
     type: [User],
   })
   @Get()
-  async findAll(): Promise<User[]> {
+  async findAllWithPagination(
+    @Query('page') page: number = 1,
+    @Query('size') size: number = 3,
+  ): Promise<User[]> {
     try {
-      const users: User[] = await this.usersService.findAll();
+      const users: User[] = await this.usersService.findAllWithPagination(
+        page,
+        size,
+      );
       return users;
     } catch (error) {
       this.logger.error(error);

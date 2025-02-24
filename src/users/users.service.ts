@@ -27,8 +27,12 @@ export class UsersService {
     this.logger.log(`User id:${user.id} created`);
   }
 
-  async findAll(): Promise<User[]> {
-    const users: User[] = await this.usersRepository.find();
+  async findAllWithPagination(page: number, size: number): Promise<User[]> {
+    const users: User[] = await this.usersRepository
+      .createQueryBuilder('user')
+      .skip((page - 1) * size)
+      .take(size)
+      .getMany();
     this.logger.log('Uploading a list of users');
     return users;
   }

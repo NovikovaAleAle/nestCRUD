@@ -59,7 +59,7 @@ describe('UsersController', () => {
   });
 
   describe('findAllWithPagination', () => {
-    it('should found all users', async () => {
+    it('should find all users taking into account pagination', async () => {
       const result: User[] = await usersService.findAllWithPagination(
         1,
         users.length,

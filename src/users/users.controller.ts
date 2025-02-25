@@ -49,7 +49,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The found records',
-    type: [User],
+    type: PageDto<User>,
   })
   @Get()
   async findAllWithPagination(

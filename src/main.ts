@@ -14,7 +14,7 @@ async function bootstrap() {
         timestamp: true,
       }),
     });
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    app.useGlobalPipes(new ValidationPipe({ transform: true }));
     const documentFactory = () =>
       SwaggerModule.createDocument(app, configSwagger, optionsSwagger);
     SwaggerModule.setup('swagger', app, documentFactory, {

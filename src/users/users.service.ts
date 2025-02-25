@@ -5,6 +5,9 @@ import { User } from './user.entity';
 import { ErrorNotFound } from './error/error-not-found';
 import { producer } from '../config/kafka.config';
 import { CreateUserDto } from './dto/create.user.dto';
+import { PageOptionsDto } from './dto/page.options.dto';
+import { PageDto } from './dto/page.dto';
+import { PageMetaDto } from './dto/page.meta.dto';
 
 @Injectable()
 export class UsersService {
@@ -27,14 +30,18 @@ export class UsersService {
     this.logger.log(`User id:${user.id} created`);
   }
 
-  async findAllWithPagination(page: number, size: number): Promise<User[]> {
-    const users: User[] = await this.usersRepository
-      .createQueryBuilder('user')
-      .skip((page - 1) * size)
-      .take(size)
-      .getMany();
-    this.logger.log('Uploading a list of users');
-    return users;
+  async findAllWithPagination(
+    pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<User>> {
+    const queryBuilder = this.usersRepository.createQueryBuilder('user');
+    const totalItemCount: number = await queryBuilder.getCount();
+    const users: User[] = await queryBuilder
+      .skip(pageOptionsDto.getSkip)
+      .take(pageOptionsDto.take)
+      .getRawMany();
+    const pageMetaDto = new PageMetaDto(totalItemCount, pageOptionsDto);
+    this.logger.log('Uploading a list of users ');
+    return new PageDto(users, pageMetaDto);
   }
 
   async findId(id: number): Promise<User> {

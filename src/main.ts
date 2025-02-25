@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { ConsoleLogger } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
@@ -13,7 +14,7 @@ async function bootstrap() {
         timestamp: true,
       }),
     });
-
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
     const documentFactory = () =>
       SwaggerModule.createDocument(app, configSwagger, optionsSwagger);
     SwaggerModule.setup('swagger', app, documentFactory, {

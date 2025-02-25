@@ -12,10 +12,13 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create.user.dto';
 import { UpdateUserDto } from './dto/update.user.dto';
+import { PageOptionsDto } from './dto/page.options.dto';
+import { PageDto } from './dto/page.dto';
 import { User } from './user.entity';
 import { errorsHandler } from './error/errors.handler';
 import { ErrorNotFound } from './error/error-not-found';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+
 
 @ApiTags('users')
 @Controller('users')
@@ -50,15 +53,11 @@ export class UsersController {
   })
   @Get()
   async findAllWithPagination(
-    @Query('page') page: number = 1,
-    @Query('size') size: number = 3,
-  ): Promise<User[]> {
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<User>> {
     try {
-      const users: User[] = await this.usersService.findAllWithPagination(
-        page,
-        size,
-      );
-      return users;
+      const pageUsers = await this.usersService.findAllWithPagination(pageOptionsDto);
+      return pageUsers;
     } catch (error) {
       this.logger.error(error);
       throw errorsHandler(error as Error);

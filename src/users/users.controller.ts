@@ -10,15 +10,15 @@ import {
   Logger,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create.user.dto';
-import { UpdateUserDto } from './dto/update.user.dto';
-import { PageOptionsDto } from './dto/page.options.dto';
-import { PageDto } from './dto/page.dto';
+import { InputUserDto } from '../input.dto/input.user.dto';
+import { UpdateUserDto } from '../input.dto/update.user.dto';
+import { PageOptionsDto } from '../output_dto/page.options.dto';
+import { PageDto } from '../output_dto/page.dto';
 import { User } from './user.entity';
-import { errorsHandler } from './error/errors.handler';
-import { ErrorNotFound } from './error/error-not-found';
+import { errorsHandler } from '../error/errors.handler';
+import { ErrorNotFound } from '../error/error-not-found';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-
+import { OutputUserDto } from 'src/output_dto/output.user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -28,16 +28,16 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Create user' })
-  @ApiBody({ type: CreateUserDto })
+  @ApiBody({ type: InputUserDto })
   @ApiResponse({
     status: 200,
     description: 'User creation message',
     type: String,
   })
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<string> {
+  async create(@Body() inputUserDto: InputUserDto): Promise<string> {
     try {
-      await this.usersService.create(createUserDto);
+      await this.usersService.create(inputUserDto);
       return 'User created';
     } catch (error) {
       this.logger.error(error);
@@ -49,14 +49,15 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The found records',
-    type: PageDto<User>,
+    type: PageDto<OutputUserDto>,
   })
   @Get()
   async findAllWithPagination(
     @Query() pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<User>> {
+  ): Promise<PageDto<OutputUserDto>> {
     try {
-      const pageUsers = await this.usersService.findAllWithPagination(pageOptionsDto);
+      const pageUsers =
+        await this.usersService.findAllWithPagination(pageOptionsDto);
       return pageUsers;
     } catch (error) {
       this.logger.error(error);
@@ -68,10 +69,10 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The found record',
-    type: User,
+    type: OutputUserDto,
   })
   @Get(':id')
-  async findId(@Param('id') id: string): Promise<User> {
+  async findId(@Param('id') id: string): Promise<OutputUserDto> {
     try {
       const idParam: number = parseInt(id);
       const user: User = await this.usersService.findId(idParam);

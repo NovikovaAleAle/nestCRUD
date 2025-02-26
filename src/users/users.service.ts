@@ -2,12 +2,14 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
 import { User } from './user.entity';
-import { ErrorNotFound } from './error/error-not-found';
+import { ErrorNotFound } from '../error/error-not-found';
 import { producer } from '../config/kafka.config';
-import { CreateUserDto } from './dto/create.user.dto';
-import { PageOptionsDto } from './dto/page.options.dto';
-import { PageDto } from './dto/page.dto';
-import { PageMetaDto } from './dto/page.meta.dto';
+import { InputUserDto } from '../input.dto/input.user.dto';
+import { PageOptionsDto } from '../output_dto/page.options.dto';
+import { PageDto } from '../output_dto/page.dto';
+import { PageMetaDto } from '../output_dto/page.meta.dto';
+import { OutputUserDto } from 'src/output_dto/output.user.dto';
+import { UpdateUserDto } from 'src/input.dto/update.user.dto';
 
 @Injectable()
 export class UsersService {
@@ -18,8 +20,8 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<void> {
-    const user: User = await this.usersRepository.save(createUserDto);
+  async create(inputUserDto: InputUserDto): Promise<void> {
+    const user: User = await this.usersRepository.save(inputUserDto);
     await producer.connect();
     await producer.send({
       topic: 'test-topic',
@@ -32,11 +34,11 @@ export class UsersService {
 
   async findAllWithPagination(
     pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<User>> {
+  ): Promise<PageDto<OutputUserDto>> {
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
     const totalItemCount: number = await queryBuilder.getCount();
     const users: User[] = await queryBuilder
-      .skip(pageOptionsDto.getSkip)
+      .skip(pageOptionsDto.skip)
       .take(pageOptionsDto.take)
       .getRawMany();
     const pageMetaDto = new PageMetaDto(totalItemCount, pageOptionsDto);
@@ -63,10 +65,10 @@ export class UsersService {
     this.logger.log(`User with id:${id} deleted`);
   }
 
-  async updateId(id: number, userParam: Partial<User>): Promise<void> {
+  async updateId(id: number, updateUserDto: UpdateUserDto): Promise<void> {
     const user: User | null = await this.usersRepository.findOneBy({ id });
     if (user) {
-      Object.assign(user, userParam);
+      Object.assign(user, updateUserDto);
       await this.usersRepository.save(user);
     } else {
       this.logger.warn(`User to update with id:${id} not found`);

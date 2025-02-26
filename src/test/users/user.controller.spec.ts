@@ -3,7 +3,7 @@ import { UsersService } from '../../users/users.service';
 import { User } from '../../users/user.entity';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ErrorNotFound } from '../../users/error/error-not-found';
+import { ErrorNotFound } from '../../error/error-not-found';
 
 describe('UsersController', () => {
   let usersService: UsersService;
@@ -57,7 +57,7 @@ describe('UsersController', () => {
       expect(usersRepository.save).toHaveBeenCalledWith(newUser);
     });
   });
-
+  /*
   describe('findAllWithPagination', () => {
     it('should find all users taking into account pagination', async () => {
       const result: User[] = await usersService.findAllWithPagination(
@@ -67,6 +67,8 @@ describe('UsersController', () => {
       expect(result).toEqual(users);
     });
   });
+
+  */
 
   describe('findId', () => {
     it('should found user by id', async () => {

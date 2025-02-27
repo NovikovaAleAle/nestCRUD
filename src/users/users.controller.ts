@@ -8,17 +8,18 @@ import {
   Delete,
   Patch,
   Logger,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { InputUserDto } from '../input.dto/input.user.dto';
-import { UpdateUserDto } from '../input.dto/update.user.dto';
-import { PageOptionsDto } from '../output_dto/page.options.dto';
-import { PageDto } from '../output_dto/page.dto';
+import { InputUserDto } from '../dto/input.dto/input.user.dto';
+import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
+import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
+import { PageDto } from '../dto/output.dto/page.dto';
 import { User } from './user.entity';
 import { errorsHandler } from '../error/errors.handler';
 import { ErrorNotFound } from '../error/error-not-found';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { OutputUserDto } from 'src/output_dto/output.user.dto';
+import { OutputUserDto } from 'src/dto/output.dto/output.user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -72,11 +73,10 @@ export class UsersController {
     type: OutputUserDto,
   })
   @Get(':id')
-  async findId(@Param('id') id: string): Promise<OutputUserDto> {
+  async findId(@Param('id', ParseIntPipe) id: number): Promise<OutputUserDto> {
     try {
-      const idParam: number = parseInt(id);
-      const user: User = await this.usersService.findId(idParam);
-      return user;
+      const outputUser: User = await this.usersService.findId(id);
+      return outputUser;
     } catch (error) {
       this.logger.error(`User id:${id} findId, ${error}`);
       throw errorsHandler(error as Error | ErrorNotFound);
@@ -90,10 +90,9 @@ export class UsersController {
     type: String,
   })
   @Delete(':id')
-  async deleteId(@Param('id') id: string): Promise<string> {
+  async deleteId(@Param('id', ParseIntPipe) id: number): Promise<string> {
     try {
-      const idParam: number = parseInt(id);
-      await this.usersService.deleteId(idParam);
+      await this.usersService.deleteId(id);
       return 'User deleted';
     } catch (error) {
       this.logger.error(`User id:${id} deleteId, ${error}`);
@@ -110,12 +109,11 @@ export class UsersController {
   })
   @Patch(':id')
   async updateId(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ): Promise<string> {
     try {
-      const idParam: number = parseInt(id);
-      await Promise.resolve(this.usersService.updateId(idParam, updateUserDto));
+      await this.usersService.updateId(id, updateUserDto);
       return 'User updated';
     } catch (error) {
       this.logger.error(`User id:${id} updateId, ${error}`);

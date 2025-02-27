@@ -1,5 +1,5 @@
 import { OutputUserDto } from './output.user.dto';
-import { PageMetaDto } from './page.meta.dto';
+import { PageMetaDto } from '../page.meta.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PageDto<OutputUserDto> {

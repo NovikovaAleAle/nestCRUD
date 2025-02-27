@@ -4,12 +4,13 @@ import { Repository, DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { ErrorNotFound } from '../error/error-not-found';
 import { producer } from '../config/kafka.config';
-import { InputUserDto } from '../input.dto/input.user.dto';
-import { PageOptionsDto } from '../output_dto/page.options.dto';
-import { PageDto } from '../output_dto/page.dto';
-import { PageMetaDto } from '../output_dto/page.meta.dto';
-import { OutputUserDto } from 'src/output_dto/output.user.dto';
-import { UpdateUserDto } from 'src/input.dto/update.user.dto';
+import { InputUserDto } from '../dto/input.dto/input.user.dto';
+import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
+import { PageDto } from '../dto/output.dto/page.dto';
+import { PageMetaDto } from '../dto/page.meta.dto';
+import { OutputUserDto } from 'src/dto/output.dto/output.user.dto';
+import { UpdateUserDto } from 'src/dto/input.dto/update.user.dto';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class UsersService {
@@ -41,19 +42,30 @@ export class UsersService {
       .skip(pageOptionsDto.skip)
       .take(pageOptionsDto.take)
       .getRawMany();
+    const outputUsers: OutputUserDto[] = [];
+    for (const user of users) {
+      const usernew: OutputUserDto = plainToClass(OutputUserDto, user, {
+        excludeExtraneousValues: true,
+      });
+      outputUsers.push(usernew);
+    }
+
     const pageMetaDto = new PageMetaDto(totalItemCount, pageOptionsDto);
     this.logger.log('Uploading a list of users ');
-    return new PageDto(users, pageMetaDto);
+    return new PageDto(outputUsers, pageMetaDto);
   }
 
-  async findId(id: number): Promise<User> {
+  async findId(id: number): Promise<OutputUserDto> {
     const user: User | null = await this.usersRepository.findOneBy({ id });
     if (!user) {
       this.logger.warn(`User with id:${id} not found`);
       throw new ErrorNotFound('User not found');
     }
+    const outputUser = plainToClass(OutputUserDto, user, {
+      excludeExtraneousValues: true,
+    });
     this.logger.log(`User with id:${id} found`);
-    return user;
+    return outputUser;
   }
 
   async deleteId(id: number): Promise<void> {

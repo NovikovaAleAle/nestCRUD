@@ -1,4 +1,4 @@
-import { PageOptionsDto } from './page.options.dto';
+import { PageOptionsDto } from './input.dto/page.options.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PageMetaDto {

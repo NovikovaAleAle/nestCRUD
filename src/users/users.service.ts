@@ -41,17 +41,14 @@ export class UsersService {
     const users: User[] = await queryBuilder
       .skip(pageOptionsDto.skip)
       .take(pageOptionsDto.take)
-      .getRawMany();
-    const outputUsers: OutputUserDto[] = [];
-    for (const user of users) {
-      const usernew: OutputUserDto = plainToClass(OutputUserDto, user, {
+      .getMany();
+    const outputUsers: OutputUserDto[] = users.map((user) =>
+      plainToClass(OutputUserDto, user, {
         excludeExtraneousValues: true,
-      });
-      outputUsers.push(usernew);
-    }
-
+      }),
+    );
     const pageMetaDto = new PageMetaDto(totalItemCount, pageOptionsDto);
-    this.logger.log('Uploading a list of users ');
+    this.logger.log('Uploading a list of users');
     return new PageDto(outputUsers, pageMetaDto);
   }
 

@@ -15,7 +15,6 @@ import { InputUserDto } from '../dto/input.dto/input.user.dto';
 import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
-import { User } from './user.entity';
 import { errorsHandler } from '../error/errors.handler';
 import { ErrorNotFound } from '../error/error-not-found';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
@@ -57,7 +56,7 @@ export class UsersController {
     @Query() pageOptionsDto: PageOptionsDto,
   ): Promise<PageDto<OutputUserDto>> {
     try {
-      const pageUsers =
+      const pageUsers: PageDto<OutputUserDto> =
         await this.usersService.findAllWithPagination(pageOptionsDto);
       return pageUsers;
     } catch (error) {
@@ -75,7 +74,7 @@ export class UsersController {
   @Get(':id')
   async findId(@Param('id', ParseIntPipe) id: number): Promise<OutputUserDto> {
     try {
-      const outputUser: User = await this.usersService.findId(id);
+      const outputUser: OutputUserDto = await this.usersService.findId(id);
       return outputUser;
     } catch (error) {
       this.logger.error(`User id:${id} findId, ${error}`);

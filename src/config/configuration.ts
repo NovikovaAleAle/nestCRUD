@@ -7,6 +7,6 @@ export default () => ({
     port: parseIntEnv('DATABASE_PORT'),
     username: parseStringEnv('DATABASE_USERNAME'),
     password: parseStringEnv('DATABASE_PASSWORD'),
-    database: parseStringEnv('DATABASE_DATABASE'),
+    database: parseStringEnv('DATABASE'),
   },
 });

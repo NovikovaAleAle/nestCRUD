@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { ConsoleLogger } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
 import { configSwagger, optionsSwagger } from './config/swagger.config';
+import { parseIntEnv } from './helpers/parse.env.helper';
 
 async function bootstrap() {
   try {
@@ -24,7 +25,7 @@ async function bootstrap() {
       jsonDocumentUrl: 'swagger/json',
     });
 
-    await app.listen(process.env.PORT ?? 3000);
+    await app.listen(parseIntEnv('PORT'));
   } catch (error) {
     console.error('Error starting the application:', error);
   }

@@ -4,6 +4,7 @@ import { UsersModule } from './users/users.module';
 import { DataSource } from 'typeorm';
 import { DatabaseModule } from './database/database.module';
 import configuration from './config/configuration';
+import { KafkaModule } from './kafka/kafka.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import configuration from './config/configuration';
       load: [configuration],
     }),
     DatabaseModule,
+    KafkaModule,
     UsersModule,
   ],
 })

@@ -20,9 +20,5 @@ export class KafkaService {
         throw errorsHandler(error as Error);
       });
     this.logger.log('User creation message sent');
-    producer.disconnect().catch((error) => {
-      this.logger.error("The producer couldn't disconnect");
-      throw errorsHandler(error as Error);
-    });
   }
 }

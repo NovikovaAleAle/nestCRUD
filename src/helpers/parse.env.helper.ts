@@ -1,4 +1,4 @@
-export const parseStringEnv = (name: string) => {
+export const parseStringEnv = (name: string): string => {
   const valueStr: string | undefined = process.env[name];
   if (!valueStr) {
     throw new Error(`Invalid env ${name}`);
@@ -6,7 +6,7 @@ export const parseStringEnv = (name: string) => {
   return valueStr;
 };
 
-export const parseIntEnv = (name: string) => {
+export const parseIntEnv = (name: string): number => {
   const valueStr: string | undefined = process.env[name];
   if (!valueStr) {
     throw new Error(`Invalid env ${name}`);

@@ -9,4 +9,9 @@ export default () => ({
     password: parseStringEnv('DATABASE_PASSWORD'),
     database: parseStringEnv('DATABASE'),
   },
+  kafka: {
+    broker: parseStringEnv('KAFFKA_BROKER'),
+    topic: parseStringEnv('KAFFKA_TOPIC'),
+    groupId: parseStringEnv('KAFFKA_GROUP_ID'),
+  },
 });

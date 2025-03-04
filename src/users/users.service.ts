@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { ErrorNotFound } from '../error/error-not-found';
-import { producer } from '../config/kafka.config';
 import { InputUserDto } from '../dto/input.dto/input.user.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
@@ -11,25 +10,21 @@ import { PageMetaDto } from '../dto/page.meta.dto';
 import { OutputUserDto } from 'src/dto/output.dto/output.user.dto';
 import { UpdateUserDto } from 'src/dto/input.dto/update.user.dto';
 import { plainToClass } from 'class-transformer';
+import { KafkaService } from 'src/kafka/kafka.service';
 
 @Injectable()
 export class UsersService {
   private readonly logger = new Logger(UsersService.name);
 
   constructor(
+    private readonly kafkaServise: KafkaService,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
   ) {}
 
   async create(inputUserDto: InputUserDto): Promise<void> {
     const user: User = await this.usersRepository.save(inputUserDto);
-    await producer.connect();
-    await producer.send({
-      topic: 'test-topic',
-      messages: [{ value: `User ${JSON.stringify(user.id)} created.` }],
-    });
-    this.logger.log('User creation message sent');
-    await producer.disconnect();
+    this.kafkaServise.sendMessage(`User id:${user.id} created`);
     this.logger.log(`User id:${user.id} created`);
   }
 

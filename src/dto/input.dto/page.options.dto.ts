@@ -1,22 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional } from 'class-validator';
-import { IsNumberAndStringMatch } from 'src/decorators/validation.decorators';
+import { IsOptional, IsInt, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class PageOptionsDto {
-  @ApiProperty({ description: 'Number page', minimum:1, default: 1 })
+  @ApiProperty({ description: 'Number page', minimum: 1, default: 1 })
   @IsOptional()
-  @IsNumberAndStringMatch(1,{
-    message:'page does not match the given pattern',
-  })
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
   readonly page: number = 1;
 
-  @ApiProperty({ description: 'Number of records per page', minimum:3, default: 3 })
+  @ApiProperty({
+    description: 'Number of records per page',
+    minimum: 3,
+    default: 3,
+  })
   @IsOptional()
-  @IsNumberAndStringMatch(3,{
-    message:'take does not match the given pattern ',
-  },)
+  @Type(() => Number)
+  @IsInt()
+  @Min(3)
   readonly take: number = 3;
-
   get skip(): number {
     return (this.page - 1) * this.take;
   }

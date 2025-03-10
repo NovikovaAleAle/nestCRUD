@@ -19,7 +19,7 @@ import { Partitioners } from 'kafkajs';
             },
             producer: {
               topic: configService.get<string>('kafka.topic'),
-              createPartitioner: Partitioners.LegacyPartitioner,
+              createPartitioner: Partitioners.DefaultPartitioner,
             },
             consumer: {
               groupId: configService.get<string>('kafka.groupId') || '',

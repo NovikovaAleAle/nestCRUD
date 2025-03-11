@@ -1,16 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional, IsInt, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class PageOptionsDto {
-  @ApiProperty({ description: 'Number page', minimum: 1, default: 1 })
+  @ApiPropertyOptional({ description: 'Number page', minimum: 1, default: 1 })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)
   readonly page: number = 1;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'Number of records per page',
     minimum: 3,
     default: 3,

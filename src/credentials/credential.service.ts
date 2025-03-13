@@ -1,23 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { Credential } from './credential.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CredentialService {
-  private readonly credentials = [
-    {
-      id: 1,
-      username: 'admin',
-      password: 'admin',
-    },
-    {
-      id: 2,
-      username: 'guess',
-      password: 'guess',
-    },
-  ];
-  async findOne(username: string): Promise<Credential | undefined> {
-    return await Promise.resolve(
-      this.credentials.find((credential) => credential.username === username),
-    );
+  constructor(
+    @InjectRepository(Credential)
+      private credentialsRepository: Repository<Credential>,
+    ) {}
+
+  async findOne(username: string): Promise<Credential | null> {
+    const count = await this.credentialsRepository.count();
+    const cred = await this.credentialsRepository.findOneBy({ username });
+    console.log('sfddsfd', cred, count);
+    return cred;    
   }
 }

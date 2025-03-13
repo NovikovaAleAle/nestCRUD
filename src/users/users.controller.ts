@@ -9,6 +9,7 @@ import {
   Patch,
   Logger,
   ParseIntPipe,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { InputUserDto } from '../dto/input.dto/input.user.dto';
@@ -17,8 +18,17 @@ import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
 import { errorsHandler } from '../error/errors.handler';
 import { ErrorNotFound } from '../error/error-not-found';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
-import { OutputUserDto } from 'src/dto/output.dto/output.user.dto';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiBasicAuth,
+  ApiSecurity,
+} from '@nestjs/swagger';
+import { OutputUserDto } from '../dto/output.dto/output.user.dto';
+import { BasicAuthGuard } from '../auth/basic.auth.guard';
+import { JwtAuthGuard } from '../auth/jwt.auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -26,7 +36,7 @@ export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
   constructor(private usersService: UsersService) {}
-
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create user' })
   @ApiBody({ type: InputUserDto })
   @ApiResponse({
@@ -45,6 +55,8 @@ export class UsersController {
     }
   }
 
+  @UseGuards(BasicAuthGuard)
+  @ApiBasicAuth()
   @ApiOperation({ summary: 'Search for all users with pagination' })
   @ApiResponse({
     status: 200,
@@ -65,6 +77,8 @@ export class UsersController {
     }
   }
 
+  @UseGuards(BasicAuthGuard)
+  @ApiBasicAuth()
   @ApiOperation({ summary: 'Search the user by id' })
   @ApiResponse({
     status: 200,
@@ -82,6 +96,7 @@ export class UsersController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Delete the user by id' })
   @ApiResponse({
     status: 200,
@@ -99,6 +114,8 @@ export class UsersController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('JwtBearer')
   @ApiOperation({ summary: 'Update the user by id' })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({

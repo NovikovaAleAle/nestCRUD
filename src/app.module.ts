@@ -5,6 +5,7 @@ import { DataSource } from 'typeorm';
 import { DatabaseModule } from './database/database.module';
 import configuration from './config/configuration';
 import { KafkaModule } from './kafka/kafka.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { KafkaModule } from './kafka/kafka.module';
     DatabaseModule,
     KafkaModule,
     UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {

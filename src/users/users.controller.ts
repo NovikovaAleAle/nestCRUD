@@ -36,7 +36,9 @@ export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
   constructor(private usersService: UsersService) {}
-  @UseGuards(JwtAuthGuard)
+
+  @UseGuards(BasicAuthGuard)
+  @ApiBasicAuth()
   @ApiOperation({ summary: 'Create user' })
   @ApiBody({ type: InputUserDto })
   @ApiResponse({
@@ -55,8 +57,8 @@ export class UsersController {
     }
   }
 
-  @UseGuards(BasicAuthGuard)
-  @ApiBasicAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('JwtBearer')
   @ApiOperation({ summary: 'Search for all users with pagination' })
   @ApiResponse({
     status: 200,
@@ -77,8 +79,8 @@ export class UsersController {
     }
   }
 
-  @UseGuards(BasicAuthGuard)
-  @ApiBasicAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiSecurity('JwtBearer')
   @ApiOperation({ summary: 'Search the user by id' })
   @ApiResponse({
     status: 200,
@@ -96,7 +98,8 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(BasicAuthGuard)
+  @ApiBasicAuth()
   @ApiOperation({ summary: 'Delete the user by id' })
   @ApiResponse({
     status: 200,
@@ -114,8 +117,8 @@ export class UsersController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
-  @ApiSecurity('JwtBearer')
+  @UseGuards(BasicAuthGuard)
+  @ApiBasicAuth()
   @ApiOperation({ summary: 'Update the user by id' })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({

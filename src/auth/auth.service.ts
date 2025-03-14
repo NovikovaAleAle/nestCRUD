@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CredentialService } from 'src/credentials/credential.service';
 import { Credential } from '../credentials/credential.entity';
 import { JwtService } from '@nestjs/jwt';
+import { TokenDto } from 'src/dto/output.dto/token.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,17 +18,15 @@ export class AuthService {
     const credential = await this.credentialService.findOne(username);
     if (credential && credential.password === pass) {
       const { password, ...result } = credential;
-      console.log(password);
-      console.log('dcd', result);
       return result;
     }
     return null;
   }
 
-  async login(credential: any): Promise<object> {
-    const payload = { username: credential.username, sub: credential.id };
+  async login(credential: Partial<Credential>): Promise<TokenDto> {
+    const payload = { username: credential.username, id: credential.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: await this.jwtService.signAsync(payload),
     };
   }
 }

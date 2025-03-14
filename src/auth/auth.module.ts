@@ -17,7 +17,7 @@ import { ConfigService } from '@nestjs/config';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('jwt.secretKey'),
         signOptions: { expiresIn: '5m' },
-      }), 
+      }),
     }),
   ],
   providers: [AuthService, AppBasicStrategy, JwtStrategy],

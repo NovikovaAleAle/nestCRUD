@@ -57,9 +57,8 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9091
       KAFKA_INTER_BROKER_LISTENER_NAME: DOCKER
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
     volumes:
-       - kafka-data:/tmp/kraft-combined-logs
+      - /tmp/kafka-data:/tmp/kafka-logs
     restart: unless-stopped
 
   kafka-ui:
@@ -88,7 +87,6 @@ services:
 volumes:
   pg-data:
   pgadmin-data:
-  kafka-data:
   kafka-ui-data:
 
 networks:

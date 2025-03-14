@@ -20,5 +20,5 @@ export default () => ({
   credential: {
     username: parseStringEnv('CREDENTIAL_USERNAME'),
     password: parseStringEnv('CREDENTIAL_PASSWORD'),
-  }
+  },
 });

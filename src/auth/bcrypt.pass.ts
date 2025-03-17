@@ -6,7 +6,7 @@ export const hashedPassword = async (
   password: string | undefined,
 ): Promise<string> => {
   if (!password) {
-    throw new Error('Passport not found');
+    throw new Error('Password not found');
   }
   return await bcrypt.hash(password, saltOrRounds);
 };

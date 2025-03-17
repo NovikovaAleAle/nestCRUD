@@ -2,6 +2,7 @@ import { BasicStrategy } from 'passport-http';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Credential } from 'src/credentials/credential.entity';
 
 @Injectable()
 export class AppBasicStrategy extends PassportStrategy(BasicStrategy) {
@@ -9,7 +10,10 @@ export class AppBasicStrategy extends PassportStrategy(BasicStrategy) {
     super();
   }
 
-  async validate(username: string, password: string): Promise<any> {
+  async validate(
+    username: string,
+    password: string,
+  ): Promise<Partial<Credential>> {
     const credential = await this.authSerice.validateCredential(
       username,
       password,

@@ -5,6 +5,7 @@ import { Credential } from './credential.entity';
 import { Repository } from 'typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import { hashedPassword } from '../auth/bcrypt.pass';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Credential]), ConfigModule],
@@ -20,9 +21,12 @@ export class CredentialModule implements OnModuleInit {
   ) {}
   async onModuleInit() {
     if ((await this.credentialRepository.count()) === 0) {
+      const hashPassword = await hashedPassword(
+        this.configService.get<string>('credential.password'),
+      );
       await this.credentialRepository.save({
         username: this.configService.get<string>('credential.username'),
-        password: this.configService.get<string>('credential.password'),
+        password: hashPassword,
       });
       this.logger.log('First credential created');
     }

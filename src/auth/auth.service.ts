@@ -3,6 +3,7 @@ import { CredentialService } from 'src/credentials/credential.service';
 import { Credential } from '../credentials/credential.entity';
 import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from 'src/dto/output.dto/token.dto';
+import { isMatch } from './bcrypt.pass';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,8 @@ export class AuthService {
     pass: string,
   ): Promise<Partial<Credential> | null> {
     const credential = await this.credentialService.findOne(username);
-    if (credential && credential.password === pass) {
+    if (credential && (await isMatch(pass, credential.password))) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = credential;
       return result;
     }

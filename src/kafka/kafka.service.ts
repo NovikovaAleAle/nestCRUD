@@ -3,13 +3,13 @@ import { ClientKafka } from '@nestjs/microservices';
 import { errorsHandler } from '../error/errors.handler';
 import kafkaConfig from '../config/kafka.config';
 import { ConfigType } from '@nestjs/config';
-import { AppConstant } from '../config/constants';
+import { CLIENT_KAFKA_NAME } from '../config/constants';
 
 @Injectable()
 export class KafkaService {
   private readonly logger = new Logger(KafkaService.name);
   constructor(
-    @Inject(AppConstant.CLIENT_KAFKA_NAME) private readonly clientKafka: ClientKafka,
+    @Inject(CLIENT_KAFKA_NAME) private readonly clientKafka: ClientKafka,
     @Inject(kafkaConfig.KEY)
     private configKafka: ConfigType<typeof kafkaConfig>,
   ) {}

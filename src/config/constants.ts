@@ -1,7 +1,4 @@
-export enum AppConstant {
-  CLIENT_KAFKA_NAME = 'appNest',
-  JWT_BEARER= 'JwtBearer',
-}
+export const CLIENT_KAFKA_NAME = 'appNest';
 
 export enum Env {
   PORT = 'PORT',

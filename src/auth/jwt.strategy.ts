@@ -1,5 +1,5 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { parseStringEnv } from '../helpers/parse.env.helper';
 import { Credential } from '../credentials/credential.entity';

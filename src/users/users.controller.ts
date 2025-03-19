@@ -24,12 +24,11 @@ import {
   ApiResponse,
   ApiBody,
   ApiBasicAuth,
-  ApiSecurity,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { BasicAuthGuard } from '../auth/basic.auth.guard';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import { AppConstant } from '../config/constants';
 
 @ApiTags('users')
 @Controller('users')
@@ -59,7 +58,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiSecurity(AppConstant.JWT_BEARER)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Search for all users with pagination' })
   @ApiResponse({
     status: 200,
@@ -81,7 +80,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiSecurity(AppConstant.JWT_BEARER)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Search the user by id' })
   @ApiResponse({
     status: 200,

@@ -1,14 +1,14 @@
 import * as bcrypt from 'bcrypt';
 
-const saltOrRounds = 10;
+const salt = async (): Promise<string> => { return bcrypt.genSalt() };
 
 export const hashedPassword = async (
   password: string | undefined,
 ): Promise<string> => {
   if (!password) {
-    throw new Error('Password not found');
+    throw new Error('Password undefined');
   }
-  return await bcrypt.hash(password, saltOrRounds);
+  return await bcrypt.hash(password, await salt());
 };
 
 export const isMatch = async (

@@ -3,18 +3,19 @@ import { ConfigModule, ConfigType } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { CredentialModule } from './credentials/credential.module';
 import { DataSource } from 'typeorm';
-import configuration from './config/configuration';
 import { KafkaModule } from './kafka/kafka.module';
 import { AuthModule } from './auth/auth.module';
 import databaseConfig from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import kafkaConfig from './config/kafka.config';
+import jwtConfig from './config/jwt.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env'],
-      load: [configuration, databaseConfig],
+      load: [databaseConfig, kafkaConfig, jwtConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule.forFeature(databaseConfig)],

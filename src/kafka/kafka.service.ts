@@ -1,15 +1,15 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ClientKafka } from '@nestjs/microservices';
 import { errorsHandler } from '../error/errors.handler';
-import { ClientKafkaName } from '../config/constants';
-import kafkaConfig from 'src/config/kafka.config';
+import kafkaConfig from '../config/kafka.config';
 import { ConfigType } from '@nestjs/config';
+import { AppConstant } from '../config/constants';
 
 @Injectable()
 export class KafkaService {
   private readonly logger = new Logger(KafkaService.name);
   constructor(
-    @Inject(ClientKafkaName) private readonly clientKafka: ClientKafka,
+    @Inject(AppConstant.CLIENT_KAFKA_NAME) private readonly clientKafka: ClientKafka,
     @Inject(kafkaConfig.KEY)
     private configKafka: ConfigType<typeof kafkaConfig>,
   ) {}

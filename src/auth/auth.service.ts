@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CredentialService } from 'src/credentials/credential.service';
+import { CredentialService } from '../credentials/credential.service';
 import { Credential } from '../credentials/credential.entity';
 import { JwtService } from '@nestjs/jwt';
-import { TokenDto } from 'src/dto/output.dto/token.dto';
+import { TokenDto } from '../dto/output.dto/token.dto';
 import { isMatch } from './bcrypt.pass';
 
 @Injectable()

@@ -1,8 +1,9 @@
 import { registerAs } from '@nestjs/config';
 import { parseStringEnv } from '../helpers/parse.env.helper';
+import { Env } from './constants';
 
 export default registerAs('kafka', () => ({
-  broker: parseStringEnv('KAFKA_BROKER'),
-  topic: parseStringEnv('KAFKA_TOPIC'),
-  groupId: parseStringEnv('KAFKA_GROUP_ID'),
+  broker: parseStringEnv(Env.KAFKA_BROKER),
+  topic: parseStringEnv(Env.KAFKA_TOPIC),
+  groupId: parseStringEnv(Env.KAFKA_GROUP_ID),
 }));

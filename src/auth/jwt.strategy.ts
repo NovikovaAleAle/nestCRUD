@@ -1,8 +1,9 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { parseStringEnv } from 'src/helpers/parse.env.helper';
-import { Credential } from 'src/credentials/credential.entity';
+import { parseStringEnv } from '../helpers/parse.env.helper';
+import { Credential } from '../credentials/credential.entity';
+import { Env } from '../config/constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -10,7 +11,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: parseStringEnv('JWT_SECRET_KEY'),
+      secretOrKey: parseStringEnv(Env.JWT_SECRET_KEY),
     });
   }
   validate(payload: Partial<Credential>) {

@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 import { BasicAuthGuard } from './basic.auth.guard';
 import { ApiBasicAuth } from '@nestjs/swagger';
 import { Request } from 'express';
-import { TokenDto } from 'src/dto/output.dto/token.dto';
+import { TokenDto } from '../dto/output.dto/token.dto';
 
 @Controller('auth')
 export class AuthController {

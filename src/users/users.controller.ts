@@ -17,7 +17,7 @@ import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
 import { errorsHandler } from '../error/errors.handler';
-import { ErrorNotFound } from '../error/error-not-found';
+import { ErrorUserNotFound } from '../error/error.user-not-found';
 import {
   ApiTags,
   ApiOperation,
@@ -29,6 +29,7 @@ import {
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { BasicAuthGuard } from '../auth/basic.auth.guard';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { AppConstant } from '../config/constants';
 
 @ApiTags('users')
 @Controller('users')
@@ -58,7 +59,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiSecurity('JwtBearer')
+  @ApiSecurity(AppConstant.JWT_BEARER)
   @ApiOperation({ summary: 'Search for all users with pagination' })
   @ApiResponse({
     status: 200,
@@ -80,7 +81,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiSecurity('JwtBearer')
+  @ApiSecurity(AppConstant.JWT_BEARER)
   @ApiOperation({ summary: 'Search the user by id' })
   @ApiResponse({
     status: 200,
@@ -94,7 +95,7 @@ export class UsersController {
       return outputUser;
     } catch (error) {
       this.logger.error(`User id:${id} findId, ${error}`);
-      throw errorsHandler(error as Error | ErrorNotFound);
+      throw errorsHandler(error as Error | ErrorUserNotFound);
     }
   }
 
@@ -113,7 +114,7 @@ export class UsersController {
       return 'User deleted';
     } catch (error) {
       this.logger.error(`User id:${id} deleteId, ${error}`);
-      throw errorsHandler(error as Error | ErrorNotFound);
+      throw errorsHandler(error as Error | ErrorUserNotFound);
     }
   }
 
@@ -136,7 +137,7 @@ export class UsersController {
       return 'User updated';
     } catch (error) {
       this.logger.error(`User id:${id} updateId, ${error}`);
-      throw errorsHandler(error as Error | ErrorNotFound);
+      throw errorsHandler(error as Error | ErrorUserNotFound);
     }
   }
 }

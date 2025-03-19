@@ -1,19 +1,19 @@
-export const parseStringEnv = (name: string): string => {
-  const valueStr: string | undefined = process.env[name];
+const envIsExist = (nameEnv:string) => {
+  const valueStr: string | undefined = process.env[nameEnv];
   if (!valueStr) {
-    throw new Error(`Invalid env ${name}`);
-  }
+    throw new Error(`Env ${nameEnv} not found`);
+  } 
   return valueStr;
+}
+
+export const parseStringEnv = (nameEnv: string): string => {
+  return envIsExist(nameEnv);
 };
 
-export const parseIntEnv = (name: string): number => {
-  const valueStr: string | undefined = process.env[name];
-  if (!valueStr) {
-    throw new Error(`Invalid env ${name}`);
-  }
-  const valueInt: number = parseInt(valueStr);
+export const parseIntEnv = (nameEnv: string): number => {
+  const valueInt: number = parseInt(envIsExist(nameEnv));
   if (isNaN(valueInt)) {
-    throw new Error(`Invalid env ${name}`);
+    throw new Error(`Invalid env ${nameEnv}`);
   }
   return valueInt;
 };

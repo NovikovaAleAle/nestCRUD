@@ -3,12 +3,13 @@ import { CredentialService } from './credential.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Credential } from './credential.entity';
 import { Repository } from 'typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hashedPassword } from '../auth/bcrypt.pass';
+import { parseStringEnv } from '../helpers/parse.env.helper';
+import { Env } from '../config/constants';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Credential]), ConfigModule],
+  imports: [TypeOrmModule.forFeature([Credential])],
   providers: [CredentialService],
   exports: [CredentialService],
 })
@@ -17,15 +18,12 @@ export class CredentialModule implements OnModuleInit {
   constructor(
     @InjectRepository(Credential)
     private credentialRepository: Repository<Credential>,
-    private readonly configService: ConfigService,
   ) {}
   async onModuleInit() {
     if ((await this.credentialRepository.count()) === 0) {
-      const hashPassword = await hashedPassword(
-        this.configService.get<string>('credential.password'),
-      );
+      const hashPassword = await hashedPassword(parseStringEnv(Env.CREDENTIAL_PASSWORD));
       await this.credentialRepository.save({
-        username: this.configService.get<string>('credential.username'),
+        username: parseStringEnv(Env.CREDENTIAL_USERNAME),
         password: hashPassword,
       });
       this.logger.log('First credential created');

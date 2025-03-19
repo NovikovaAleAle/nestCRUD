@@ -1,8 +1,8 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { ErrorNotFound } from './error-not-found';
+import { ErrorUserNotFound } from './error.user-not-found';
 
 export const errorsHandler = (error: Error): HttpException => {
-  if (error instanceof ErrorNotFound) {
+  if (error instanceof ErrorUserNotFound) {
     throw new HttpException(error.message, HttpStatus.NOT_FOUND);
   }
   throw new HttpException(

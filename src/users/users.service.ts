@@ -2,15 +2,15 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
 import { User } from './user.entity';
-import { ErrorNotFound } from '../error/error-not-found';
+import { ErrorUserNotFound } from '../error/error.user-not-found';
 import { InputUserDto } from '../dto/input.dto/input.user.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
 import { PageMetaDto } from '../dto/page.meta.dto';
-import { OutputUserDto } from 'src/dto/output.dto/output.user.dto';
-import { UpdateUserDto } from 'src/dto/input.dto/update.user.dto';
+import { OutputUserDto } from '../dto/output.dto/output.user.dto';
+import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
 import { plainToClass } from 'class-transformer';
-import { KafkaService } from 'src/kafka/kafka.service';
+import { KafkaService } from '../kafka/kafka.service';
 
 @Injectable()
 export class UsersService {
@@ -51,7 +51,7 @@ export class UsersService {
     const user: User | null = await this.usersRepository.findOneBy({ id });
     if (!user) {
       this.logger.warn(`User with id:${id} not found`);
-      throw new ErrorNotFound('User not found');
+      throw new ErrorUserNotFound();
     }
     const outputUser = plainToClass(OutputUserDto, user, {
       excludeExtraneousValues: true,
@@ -64,7 +64,7 @@ export class UsersService {
     const result: DeleteResult = await this.usersRepository.delete(id);
     if (result.affected === 0) {
       this.logger.warn(`User to delete with id:${id} not found`);
-      throw new ErrorNotFound('User not found');
+      throw new ErrorUserNotFound();
     }
     this.logger.log(`User with id:${id} deleted`);
   }
@@ -76,7 +76,7 @@ export class UsersService {
       await this.usersRepository.save(user);
     } else {
       this.logger.warn(`User to update with id:${id} not found`);
-      throw new ErrorNotFound('User not found');
+      throw new ErrorUserNotFound();
     }
     this.logger.log(`User with id:${id} updated`);
   }

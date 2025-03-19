@@ -4,15 +4,15 @@ import { ClientsModule, Transport, ClientKafka } from '@nestjs/microservices';
 import { KafkaService } from './kafka.service';
 import { Inject, OnApplicationBootstrap } from '@nestjs/common';
 import { Partitioners } from 'kafkajs';
-import kafkaConfig from 'src/config/kafka.config';
-import { ClientKafkaName } from '../config/constants';
+import kafkaConfig from '../config/kafka.config';
+import { AppConstant } from '../config/constants';
 
 @Module({
   imports: [
     ClientsModule.registerAsync([
       {
         imports: [ConfigModule.forFeature(kafkaConfig)],
-        name: ClientKafkaName,
+        name: AppConstant.CLIENT_KAFKA_NAME,
         useFactory: (config: ConfigType<typeof kafkaConfig>) => ({
           transport: Transport.KAFKA,
           options: {
@@ -36,7 +36,7 @@ import { ClientKafkaName } from '../config/constants';
   exports: [KafkaService],
 })
 export class KafkaModule implements OnApplicationBootstrap {
-  constructor(@Inject(ClientKafkaName) private clientKafka: ClientKafka) {}
+  constructor(@Inject(AppConstant.CLIENT_KAFKA_NAME) private clientKafka: ClientKafka) {}
 
   async onApplicationBootstrap() {
     await this.clientKafka.connect();

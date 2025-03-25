@@ -11,13 +11,14 @@ import { MailModule } from './mail/mail.module';
 import kafkaConfig from './config/kafka.config';
 import jwtConfig from './config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
+import mailerConfig from './config/mailer.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env'],
-      load: [databaseConfig, kafkaConfig, jwtConfig],
+      load: [databaseConfig, kafkaConfig, jwtConfig, mailerConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule.forFeature(databaseConfig)],

@@ -4,9 +4,9 @@ import { Credential } from '../credentials/credential.entity';
 import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from '../dto/output.dto/token.dto';
 import { isMatch } from './bcrypt.pass';
-import { MailService } from 'src/mail/mail.service';
-import { InputCredentialDto } from 'src/dto/input.dto/input.credential.dto';
-import { InputTokenDto } from 'src/dto/input.dto/input.token.dto';
+import { MailService } from '../mail/mail.service';
+import { InputCredentialDto } from '../dto/input.dto/input.credential.dto';
+import { InputTokenDto } from '../dto/input.dto/input.token.dto';
 
 @Injectable()
 export class AuthService {

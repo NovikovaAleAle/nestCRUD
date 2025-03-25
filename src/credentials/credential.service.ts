@@ -2,8 +2,8 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { Credential } from './credential.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { InputCredentialDto } from 'src/dto/input.dto/input.credential.dto';
-import { hashedPassword } from 'src/auth/bcrypt.pass';
+import { InputCredentialDto } from '../dto/input.dto/input.credential.dto';
+import { hashedPassword } from '../auth/bcrypt.pass';
 import { plainToClass } from 'class-transformer';
 import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
 
@@ -27,11 +27,11 @@ export class CredentialService {
   async signUp(
     inputCredential: InputCredentialDto,
   ): Promise<Partial<Credential>> {
-    const hashPassword = await hashedPassword(inputCredential.password);
-    inputCredential.password = hashPassword;
     const toCredential = plainToClass(Credential, inputCredential, {
       excludeExtraneousValues: true,
     });
+    const hashPassword = await hashedPassword(toCredential.password);
+    toCredential.password = hashPassword;
     toCredential.authorization = false;
     try {
       const credential: Credential =

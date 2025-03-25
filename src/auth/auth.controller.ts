@@ -21,12 +21,12 @@ import {
 import { Request } from 'express';
 import { TokenDto } from '../dto/output.dto/token.dto';
 import { InputCredentialDto } from '../dto/input.dto/input.credential.dto';
-import { InputTokenDto } from 'src/dto/input.dto/input.token.dto';
-import { errorsHandler } from 'src/error/errors.handler';
-import { ErrorCredentialNotFound } from 'src/error/error.credential-not-found';
+import { InputTokenDto } from '../dto/input.dto/input.token.dto';
+import { errorsHandler } from '../error/errors.handler';
+import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
 import { AuthorizateGuard } from './authorizate/authorizate.guard';
 //import { Authorizate } from './authorizate/authorizate.decorator';
-import { ErrorEmailNotSent } from 'src/error/error.email-not-sent';
+import { ErrorEmailNotSent } from '../error/error.email-not-sent';
 
 @Controller('auth')
 export class AuthController {

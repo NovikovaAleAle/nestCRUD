@@ -15,7 +15,7 @@ export class InputCredentialDto {
   @IsNotEmpty()
   @IsString()
   @Length(2, 20)
-  password: string;
+  readonly password: string;
 
   @ApiProperty({ description: 'The email of the user credentials' })
   @IsNotEmpty()

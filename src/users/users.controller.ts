@@ -29,8 +29,8 @@ import {
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { BasicAuthGuard } from '../auth/basic.auth.guard';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import { AuthorizateGuard } from 'src/auth/authorizate/authorizate.guard';
-import { Authorizate } from 'src/auth/authorizate/authorizate.decorator';
+import { AuthorizateGuard } from '../auth/authorizate/authorizate.guard';
+import { Authorizate } from '../auth/authorizate/authorizate.decorator';
 
 @ApiTags('users')
 @Controller('users')

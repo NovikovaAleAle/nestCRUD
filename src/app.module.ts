@@ -7,8 +7,10 @@ import { KafkaModule } from './kafka/kafka.module';
 import { AuthModule } from './auth/auth.module';
 import databaseConfig from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailModule } from './mail/mail.module';
 import kafkaConfig from './config/kafka.config';
 import jwtConfig from './config/jwt.config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -25,10 +27,20 @@ import jwtConfig from './config/jwt.config';
         ...config,
       }),
     }),
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule.forFeature(jwtConfig)],
+      inject: [jwtConfig.KEY],
+      useFactory: (config: ConfigType<typeof jwtConfig>) => ({
+        secret: config.secret,
+        signOptions: config.signOptions,
+      }),
+    }),
     KafkaModule,
     UsersModule,
     CredentialModule,
     AuthModule,
+    MailModule,
   ],
 })
 export class AppModule {

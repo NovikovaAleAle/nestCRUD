@@ -29,6 +29,8 @@ import {
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { BasicAuthGuard } from '../auth/basic.auth.guard';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
+import { AuthorizateGuard } from 'src/auth/authorizate/authorizate.guard';
+import { Authorizate } from 'src/auth/authorizate/authorizate.decorator';
 
 @ApiTags('users')
 @Controller('users')
@@ -37,7 +39,8 @@ export class UsersController {
 
   constructor(private usersService: UsersService) {}
 
-  @UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard, AuthorizateGuard)
+  @Authorizate(true)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Create user' })
   @ApiBody({ type: InputUserDto })
@@ -98,7 +101,8 @@ export class UsersController {
     }
   }
 
-  @UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard, AuthorizateGuard)
+  @Authorizate(true)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Delete the user by id' })
   @ApiResponse({
@@ -117,7 +121,8 @@ export class UsersController {
     }
   }
 
-  @UseGuards(BasicAuthGuard)
+  @UseGuards(BasicAuthGuard, AuthorizateGuard)
+  @Authorizate(true)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Update the user by id' })
   @ApiBody({ type: UpdateUserDto })

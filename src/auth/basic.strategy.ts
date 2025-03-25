@@ -1,11 +1,12 @@
 import { BasicStrategy } from 'passport-http';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Credential } from '../credentials/credential.entity';
 
 @Injectable()
 export class AppBasicStrategy extends PassportStrategy(BasicStrategy) {
+  private readonly logger = new Logger(AppBasicStrategy.name);
   constructor(private authSerice: AuthService) {
     super();
   }
@@ -19,8 +20,10 @@ export class AppBasicStrategy extends PassportStrategy(BasicStrategy) {
       password,
     );
     if (!credential) {
+      this.logger.warn(`Credential ${username} not found`);
       throw new UnauthorizedException();
     }
+    this.logger.log(`Credential ${username} found`);
     return credential;
   }
 }

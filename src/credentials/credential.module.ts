@@ -21,10 +21,14 @@ export class CredentialModule implements OnModuleInit {
   ) {}
   async onModuleInit() {
     if ((await this.credentialRepository.count()) === 0) {
-      const hashPassword = await hashedPassword(parseStringEnv(Env.CREDENTIAL_PASSWORD));
+      const hashPassword = await hashedPassword(
+        parseStringEnv(Env.CREDENTIAL_PASSWORD),
+      );
       await this.credentialRepository.save({
         username: parseStringEnv(Env.CREDENTIAL_USERNAME),
         password: hashPassword,
+        email: parseStringEnv(Env.CREDENTIAL_EMAIL),
+        authorization: true,
       });
       this.logger.log('First credential created');
     }

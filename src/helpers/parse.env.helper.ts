@@ -1,10 +1,10 @@
-const envIsExist = (nameEnv:string) => {
+const envIsExist = (nameEnv: string) => {
   const valueStr: string | undefined = process.env[nameEnv];
   if (!valueStr) {
     throw new Error(`Env ${nameEnv} not found`);
-  } 
+  }
   return valueStr;
-}
+};
 
 export const parseStringEnv = (nameEnv: string): string => {
   return envIsExist(nameEnv);

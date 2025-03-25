@@ -1,12 +1,20 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus } from '@nestjs/common';
 import { ErrorUserNotFound } from './error.user-not-found';
+import { ErrorCredentialNotFound } from './error.credential-not-found';
+import { ErrorEmailNotSent } from './error.email-not-sent';
 
 export const errorsHandler = (error: Error): HttpException => {
-  if (error instanceof ErrorUserNotFound) {
+  if (
+    error instanceof ErrorUserNotFound ||
+    error instanceof ErrorCredentialNotFound
+  ) {
     throw new HttpException(error.message, HttpStatus.NOT_FOUND);
   }
-  throw new HttpException(
-    'Failed to fetch users',
-    HttpStatus.INTERNAL_SERVER_ERROR,
-  );
+  if (error instanceof ErrorEmailNotSent) {
+    throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+  if (error instanceof ConflictException) {
+    throw error;
+  }
+  throw new HttpException('Failed', HttpStatus.INTERNAL_SERVER_ERROR);
 };

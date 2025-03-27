@@ -1,5 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Exclude } from 'class-transformer';
+import { salt } from '../auth/bcrypt.pass';
+import * as bcrypt from 'bcrypt';
 
 @Exclude()
 @Entity()
@@ -15,11 +17,12 @@ export class Credential {
   @Column()
   password: string;
 
-  @Expose()
-  @Column()
-  email: string;
+  @BeforeInsert()
+  async hashedPassword() {
+    this.password = await bcrypt.hash(this.password, await salt());
+  }
 
   @Expose()
   @Column()
-  authorization: boolean;
+  email: string;
 }

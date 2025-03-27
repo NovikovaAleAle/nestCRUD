@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { ErrorUserNotFound } from '../error/error.user-not-found';
-import { InputUserDto } from '../dto/input.dto/input.user.dto';
+//import { InputUserDto } from '../dto/input.dto/input.user.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
 import { PageMetaDto } from '../dto/page.meta.dto';
@@ -11,6 +11,9 @@ import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
 import { plainToClass } from 'class-transformer';
 import { KafkaService } from '../kafka/kafka.service';
+import { Credential } from '../credentials/credential.entity';
+import { CreateUserDto } from '../dto/input.dto/create.user.dto';
+import { Role } from '../config/constants';
 
 @Injectable()
 export class UsersService {
@@ -22,10 +25,32 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(inputUserDto: InputUserDto): Promise<void> {
-    const user: User = await this.usersRepository.save(inputUserDto);
+  async create(createUserDto: CreateUserDto): Promise<number> {
+    const toCredential = plainToClass(Credential, createUserDto.credential, {
+      excludeExtraneousValues: true,
+    });
+    const toUser = plainToClass(User, createUserDto.user, {
+      excludeExtraneousValues: true,
+    });
+    toUser.credential = toCredential;
+    const user: User = await this.usersRepository.save(toUser);
     this.kafkaServise.sendMessage(`User id:${user.id} created`);
     this.logger.log(`User id:${user.id} created`);
+    return user.id;
+  }
+
+  async setRole(userId: number, role: Role): Promise<void> {
+    const id = userId;
+    const updatableUser: User | null = await this.usersRepository.findOneBy({
+      id,
+    });
+    if (!updatableUser) {
+      this.logger.warn(`UpdatableUser with id:${userId} not found`);
+      throw new ErrorUserNotFound();
+    }
+    updatableUser.role = role;
+    await this.usersRepository.save(updatableUser);
+    this.logger.log(`Role ${role} for user id: ${userId} set`);
   }
 
   async findAllWithPagination(
@@ -72,12 +97,31 @@ export class UsersService {
   async updateId(id: number, updateUserDto: UpdateUserDto): Promise<void> {
     const user: User | null = await this.usersRepository.findOneBy({ id });
     if (user) {
-      Object.assign(user, updateUserDto);
+      if (updateUserDto.credential) {
+        Object.assign(user.credential, updateUserDto.credential);
+      }
+      Object.assign(user, updateUserDto.user);
       await this.usersRepository.save(user);
     } else {
       this.logger.warn(`User to update with id:${id} not found`);
       throw new ErrorUserNotFound();
     }
     this.logger.log(`User with id:${id} updated`);
+  }
+
+  async findRolebyIdCredential(
+    credential: Partial<Credential>,
+  ): Promise<string> {
+    const credentialId = credential.id;
+    const queryBuilder = this.usersRepository.createQueryBuilder('user');
+    const user = await queryBuilder
+      .innerJoinAndSelect('user.credential', 'credential')
+      .where('credential.id = :credentialId', { credentialId })
+      .select(['user.role'])
+      .getOne();
+    if (user === null) {
+      throw new ErrorUserNotFound();
+    }
+    return user.role;
   }
 }

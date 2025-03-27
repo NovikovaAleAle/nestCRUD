@@ -15,15 +15,20 @@ export class AppBasicStrategy extends PassportStrategy(BasicStrategy) {
     username: string,
     password: string,
   ): Promise<Partial<Credential>> {
-    const credential = await this.authSerice.validateCredential(
-      username,
-      password,
-    );
-    if (!credential) {
-      this.logger.warn(`Credential ${username} not found`);
+    try {
+      const credential = await this.authSerice.validateCredential(
+        username,
+        password,
+      );
+      if (!credential) {
+        this.logger.warn(`Credential ${username} unauthorized`);
+        throw new UnauthorizedException();
+      }
+      this.logger.log(`Credential ${username} found`);
+      return credential;
+    } catch (error) {
+      this.logger.error(`Basic Auth validate, ${error}`);
       throw new UnauthorizedException();
     }
-    this.logger.log(`Credential ${username} found`);
-    return credential;
   }
 }

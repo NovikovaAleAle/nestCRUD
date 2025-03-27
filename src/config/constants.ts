@@ -1,5 +1,11 @@
 export const CLIENT_KAFKA_NAME = 'appNest';
-export const AUTHORIZATE_KEY = 'authorization';
+export const ROLE_KEY = 'role';
+
+export enum Role {
+  ADMIN = 'admin',
+  USER = 'user',
+  GHOST = 'ghost',
+}
 
 export enum Env {
   PORT = 'PORT',
@@ -20,4 +26,7 @@ export enum Env {
   MAILER_PORT = 'MAILER_PORT',
   MAILER_USER = 'MAILER_USER',
   MAILER_PASSWORD = 'MAILER_PASSWORD',
+  ADMIN_NAME = 'ADMIN_NAME',
+  ADMIN_SURNAME = 'ADMIN_SURNAME',
+  ADMIN_AGE = 'ADMIN_AGE',
 }

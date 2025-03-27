@@ -7,7 +7,6 @@ import {
   Body,
   UnauthorizedException,
   Logger,
-  Query,
   ConflictException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -21,20 +20,22 @@ import {
 import { Request } from 'express';
 import { TokenDto } from '../dto/output.dto/token.dto';
 import { InputCredentialDto } from '../dto/input.dto/input.credential.dto';
-import { InputTokenDto } from '../dto/input.dto/input.token.dto';
+//import { InputTokenDto } from '../dto/input.dto/input.token.dto';
 import { errorsHandler } from '../error/errors.handler';
-import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
-import { AuthorizateGuard } from './authorizate/authorizate.guard';
+//import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
+import { RolesGuard } from './roles/roles.guard';
 //import { Authorizate } from './authorizate/authorizate.decorator';
 import { ErrorEmailNotSent } from '../error/error.email-not-sent';
+import { Roles } from './roles/roles.decorator';
+import { Role } from '../config/constants';
 
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
   constructor(private authService: AuthService) {}
 
-  @UseGuards(BasicAuthGuard, AuthorizateGuard)
-  //@Authorizate(true)
+  @UseGuards(BasicAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Login' })
   @ApiResponse({
@@ -73,7 +74,7 @@ export class AuthController {
       );
     }
   }
-
+  /*
   @ApiOperation({ summary: 'Сredential confirmation at the link' })
   @ApiResponse({
     status: 200,
@@ -91,7 +92,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(BasicAuthGuard, AuthorizateGuard)
+  @UseGuards(BasicAuthGuard, RolesGuard)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Сredential reconfirmation at the link' })
   @ApiResponse({
@@ -114,4 +115,5 @@ export class AuthController {
       );
     }
   }
+  */
 }

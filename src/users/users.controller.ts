@@ -1,18 +1,17 @@
-import {
+import { Controller } from '@nestjs/common';
+/*import {
   Body,
   Query,
   Controller,
   Get,
-  Post,
   Param,
-  Delete,
   Patch,
   Logger,
   ParseIntPipe,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { InputUserDto } from '../dto/input.dto/input.user.dto';
+//import { InputUserDto } from '../dto/input.dto/input.user.dto';
 import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
@@ -29,18 +28,21 @@ import {
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { BasicAuthGuard } from '../auth/basic.auth.guard';
 import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import { AuthorizateGuard } from '../auth/authorizate/authorizate.guard';
-import { Authorizate } from '../auth/authorizate/authorizate.decorator';
+import { RolesGuard } from '../auth/roles/roles.guard';
+//import { CreateUserDto } from 'src/dto/input.dto/create.user.dto';
+//import { Authorizate } from '../auth/authorizate/authorizate.decorator';
+*/
 
-@ApiTags('users')
 @Controller('users')
 export class UsersController {
+  /*
   private readonly logger = new Logger(UsersController.name);
 
   constructor(private usersService: UsersService) {}
 
-  @UseGuards(BasicAuthGuard, AuthorizateGuard)
-  @Authorizate(true)
+
+  @UseGuards(BasicAuthGuard, RolesGuard)
+  // @Authorizate(true)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Create user' })
   @ApiBody({ type: InputUserDto })
@@ -50,9 +52,9 @@ export class UsersController {
     type: String,
   })
   @Post()
-  async create(@Body() inputUserDto: InputUserDto): Promise<string> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<string> {
     try {
-      await this.usersService.create(inputUserDto);
+      await this.usersService.create(createUserDto);
       return 'User created';
     } catch (error) {
       this.logger.error(error);
@@ -101,8 +103,8 @@ export class UsersController {
     }
   }
 
-  @UseGuards(BasicAuthGuard, AuthorizateGuard)
-  @Authorizate(true)
+  @UseGuards(BasicAuthGuard, RolesGuard)
+  // @Authorizate(true)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Delete the user by id' })
   @ApiResponse({
@@ -121,8 +123,8 @@ export class UsersController {
     }
   }
 
-  @UseGuards(BasicAuthGuard, AuthorizateGuard)
-  @Authorizate(true)
+  @UseGuards(BasicAuthGuard, RolesGuard)
+  // @Authorizate(true)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Update the user by id' })
   @ApiBody({ type: UpdateUserDto })
@@ -144,4 +146,5 @@ export class UsersController {
       throw errorsHandler(error as Error | ErrorUserNotFound);
     }
   }
+  */
 }

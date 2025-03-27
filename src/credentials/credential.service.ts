@@ -3,7 +3,6 @@ import { Credential } from './credential.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InputCredentialDto } from '../dto/input.dto/input.credential.dto';
-import { hashedPassword } from '../auth/bcrypt.pass';
 import { plainToClass } from 'class-transformer';
 import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
 
@@ -30,9 +29,6 @@ export class CredentialService {
     const toCredential = plainToClass(Credential, inputCredential, {
       excludeExtraneousValues: true,
     });
-    const hashPassword = await hashedPassword(toCredential.password);
-    toCredential.password = hashPassword;
-    toCredential.authorization = false;
     try {
       const credential: Credential =
         await this.credentialsRepository.save(toCredential);
@@ -53,7 +49,7 @@ export class CredentialService {
       throw error;
     }
   }
-
+  /*
   async confirm(payloadCredential: Partial<Credential>): Promise<void> {
     const id = payloadCredential.id;
     const credential = await this.credentialsRepository.findOneBy({ id });
@@ -71,4 +67,5 @@ export class CredentialService {
       );
     }
   }
+  */
 }

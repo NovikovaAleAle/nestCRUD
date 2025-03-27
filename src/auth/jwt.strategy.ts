@@ -1,5 +1,5 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { Injectable, Logger, ForbiddenException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { parseStringEnv } from '../helpers/parse.env.helper';
 import { Credential } from '../credentials/credential.entity';
@@ -19,12 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const credential: Partial<Credential> = {
       id: payload.id,
       username: payload.username,
-      authorization: payload.authorization,
     };
-    if (credential.authorization === false) {
-      this.logger.warn(`Credential id: ${credential.id} not confirm`);
-      throw new ForbiddenException();
-    }
     this.logger.log(`Credential ${payload.username} confirmed`);
     return credential;
   }

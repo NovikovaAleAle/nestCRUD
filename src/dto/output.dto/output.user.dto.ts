@@ -21,7 +21,7 @@ export class OutputUserDto {
   @IsString()
   @Matches(/^[a-zA-Z -]{3,20}$/)
   @Expose()
-  readonly name: string;
+  readonly username: string;
 
   @ApiProperty({ example: 'Dallas', description: 'The surname of the user' })
   @IsNotEmpty()

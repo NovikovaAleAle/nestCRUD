@@ -1,10 +1,10 @@
 import * as bcrypt from 'bcrypt';
 
-const salt = async (): Promise<string> => {
+export const salt = async (): Promise<string> => {
   return bcrypt.genSalt();
 };
 
-export const hashedPassword = async (
+/*export const hashedPassword = async (
   password: string | undefined,
 ): Promise<string> => {
   if (!password) {
@@ -12,6 +12,7 @@ export const hashedPassword = async (
   }
   return await bcrypt.hash(password, await salt());
 };
+*/
 
 export const isMatch = async (
   password: string,

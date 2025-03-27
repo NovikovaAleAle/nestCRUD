@@ -11,6 +11,7 @@ import { MailModule } from './mail/mail.module';
 import kafkaConfig from './config/kafka.config';
 import jwtConfig from './config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
+import { AdminModule } from './admin/admin.module';
 import mailerConfig from './config/mailer.config';
 
 @Module({
@@ -42,6 +43,7 @@ import mailerConfig from './config/mailer.config';
     CredentialModule,
     AuthModule,
     MailModule,
+    AdminModule,
   ],
 })
 export class AppModule {

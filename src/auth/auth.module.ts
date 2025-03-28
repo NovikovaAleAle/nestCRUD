@@ -2,16 +2,15 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CredentialModule } from '../credentials/credential.module';
 import { PassportModule } from '@nestjs/passport';
-import { AppBasicStrategy } from './basic.strategy';
-import { JwtStrategy } from './jwt.strategy';
+import { AppBasicStrategy } from './guards/basic.strategy';
+import { JwtStrategy } from './guards/jwt.strategy';
 import { AuthController } from './auth.controller';
-import { MailModule } from '../mail/mail.module';
-//import { UsersService } from 'src/users/users.service';
 import { UsersModule } from 'src/users/users.module';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
-  imports: [CredentialModule, PassportModule, MailModule, UsersModule],
-  providers: [AuthService, AppBasicStrategy, JwtStrategy],
+  imports: [PassportModule, UsersModule, CredentialModule],
+  providers: [AuthService, AppBasicStrategy, JwtStrategy, MailService],
   controllers: [AuthController],
 })
 export class AuthModule {}

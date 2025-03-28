@@ -1,7 +1,6 @@
 import {
   Controller,
   Logger,
-  UseGuards,
   ParseIntPipe,
   Post,
   Body,
@@ -10,18 +9,17 @@ import {
   Patch,
   Get,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
-  ApiBasicAuth,
+  ApiBearerAuth,
   ApiOperation,
   ApiBody,
   ApiResponse,
 } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
-import { BasicAuthGuard } from '../auth/basic.auth.guard';
-import { RolesGuard } from '../auth/roles/roles.guard';
-import { Roles } from '../auth/roles/roles.decorator';
+import { Roles } from '../auth/guards/roles/roles.decorator';
 import { Role } from '../config/constants';
 import { CreateUserDto } from '../dto/input.dto/create.user.dto';
 import { errorsHandler } from '../error/errors.handler';
@@ -31,11 +29,12 @@ import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { UsersService } from '../users/users.service';
+import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 
-@ApiTags('admin')
-@UseGuards(BasicAuthGuard, RolesGuard)
-@Roles(Role.ADMIN)
-@ApiBasicAuth()
+
+@ApiTags('Admin')
+@ApiBearerAuth()
 @Controller('admin')
 export class AdminController {
   private readonly logger = new Logger(AdminController.name);
@@ -44,7 +43,9 @@ export class AdminController {
     private adminService: AdminService,
     private usersService: UsersService,
   ) {}
-
+  
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.ADMIN])
   @ApiOperation({ summary: 'Create user with role USER' })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
@@ -63,6 +64,8 @@ export class AdminController {
     }
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.ADMIN])
   @ApiOperation({ summary: 'Delete the user by id' })
   @ApiResponse({
     status: 200,
@@ -80,6 +83,8 @@ export class AdminController {
     }
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.ADMIN])
   @ApiOperation({ summary: 'Update the user by id' })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({
@@ -101,6 +106,8 @@ export class AdminController {
     }
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.ADMIN])
   @ApiOperation({ summary: 'Search for all users with pagination' })
   @ApiResponse({
     status: 200,
@@ -121,6 +128,8 @@ export class AdminController {
     }
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.ADMIN])
   @ApiOperation({ summary: 'Search the user by id' })
   @ApiResponse({
     status: 200,

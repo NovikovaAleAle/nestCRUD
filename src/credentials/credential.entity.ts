@@ -1,6 +1,6 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Expose, Exclude } from 'class-transformer';
-import { salt } from '../auth/bcrypt.pass';
+import { salt } from '../helpers/bcrypt.pass.helper';
 import * as bcrypt from 'bcrypt';
 
 @Exclude()
@@ -25,4 +25,5 @@ export class Credential {
   @Expose()
   @Column()
   email: string;
+
 }

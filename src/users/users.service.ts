@@ -1,9 +1,8 @@
-import { Logger, Injectable } from '@nestjs/common';
+import { Logger, Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { ErrorUserNotFound } from '../error/error.user-not-found';
-//import { InputUserDto } from '../dto/input.dto/input.user.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
 import { PageMetaDto } from '../dto/page.meta.dto';
@@ -14,6 +13,7 @@ import { KafkaService } from '../kafka/kafka.service';
 import { Credential } from '../credentials/credential.entity';
 import { CreateUserDto } from '../dto/input.dto/create.user.dto';
 import { Role } from '../config/constants';
+import { UserRoleDto } from 'src/dto/user.role.dto';
 
 @Injectable()
 export class UsersService {
@@ -33,10 +33,23 @@ export class UsersService {
       excludeExtraneousValues: true,
     });
     toUser.credential = toCredential;
-    const user: User = await this.usersRepository.save(toUser);
-    this.kafkaServise.sendMessage(`User id:${user.id} created`);
-    this.logger.log(`User id:${user.id} created`);
-    return user.id;
+    try {
+      const user: User = await this.usersRepository.save(toUser);
+      this.kafkaServise.sendMessage(`User id:${user.id} created`);
+      this.logger.log(`User id:${user.id} created`);
+      return user.id;
+    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error.code === '23505') {
+        this.logger.warn(
+          `User with username ${toCredential.username} already exist`,
+        );
+        throw new ConflictException(
+          'User with this username already exist',
+        );
+      }
+      throw error;
+    }
   }
 
   async setRole(userId: number, role: Role): Promise<void> {
@@ -59,6 +72,7 @@ export class UsersService {
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
     const totalItemCount: number = await queryBuilder.getCount();
     const users: User[] = await queryBuilder
+      .orderBy('user.id')
       .skip(pageOptionsDto.skip)
       .take(pageOptionsDto.take)
       .getMany();
@@ -109,19 +123,19 @@ export class UsersService {
     this.logger.log(`User with id:${id} updated`);
   }
 
-  async findRolebyIdCredential(
-    credential: Partial<Credential>,
-  ): Promise<string> {
-    const credentialId = credential.id;
+  async findUserbyIdCredential(
+    credentialId: number,
+  ): Promise<UserRoleDto> {
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
     const user = await queryBuilder
       .innerJoinAndSelect('user.credential', 'credential')
       .where('credential.id = :credentialId', { credentialId })
-      .select(['user.role'])
       .getOne();
-    if (user === null) {
+    if (!user) {
+      this.logger.warn(`User for credential id:${credentialId} not found`);
       throw new ErrorUserNotFound();
     }
-    return user.role;
+    this.logger.log(`User role for credential id:${credentialId} found`);
+    return { id: user.id, role: user.role };
   }
 }

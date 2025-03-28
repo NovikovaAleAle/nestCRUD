@@ -1,150 +1,50 @@
-import { Controller } from '@nestjs/common';
-/*import {
+import {
+  Post,
   Body,
-  Query,
   Controller,
-  Get,
-  Param,
-  Patch,
   Logger,
-  ParseIntPipe,
-  UseGuards,
+  ConflictException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-//import { InputUserDto } from '../dto/input.dto/input.user.dto';
-import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
-import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
-import { PageDto } from '../dto/output.dto/page.dto';
 import { errorsHandler } from '../error/errors.handler';
-import { ErrorUserNotFound } from '../error/error.user-not-found';
 import {
-  ApiTags,
   ApiOperation,
   ApiResponse,
   ApiBody,
-  ApiBasicAuth,
-  ApiBearerAuth,
 } from '@nestjs/swagger';
-import { OutputUserDto } from '../dto/output.dto/output.user.dto';
-import { BasicAuthGuard } from '../auth/basic.auth.guard';
-import { JwtAuthGuard } from '../auth/jwt.auth.guard';
-import { RolesGuard } from '../auth/roles/roles.guard';
-//import { CreateUserDto } from 'src/dto/input.dto/create.user.dto';
-//import { Authorizate } from '../auth/authorizate/authorizate.decorator';
-*/
+import { CreateUserDto } from 'src/dto/input.dto/create.user.dto';
+import { ErrorEmailNotSent } from '../error/error.email-not-sent';
+import { MailService } from '../mail/mail.service';
 
 @Controller('users')
 export class UsersController {
-  /*
+
   private readonly logger = new Logger(UsersController.name);
 
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private mailService: MailService,
+  ) {}
 
-
-  @UseGuards(BasicAuthGuard, RolesGuard)
-  // @Authorizate(true)
-  @ApiBasicAuth()
-  @ApiOperation({ summary: 'Create user' })
-  @ApiBody({ type: InputUserDto })
+  @ApiOperation({ summary: 'Register user' })
+  @ApiBody({ type: CreateUserDto })
   @ApiResponse({
     status: 200,
-    description: 'User creation message',
+    description: 'Message about the need to confirm registration',
     type: String,
   })
-  @Post()
+  @Post('register')
   async create(@Body() createUserDto: CreateUserDto): Promise<string> {
     try {
-      await this.usersService.create(createUserDto);
-      return 'User created';
+      const userId: number = await this.usersService.create(createUserDto);
+      await this.mailService.sendUserConfirmation(createUserDto.credential);
+      this.logger.log(`Confirmation email sent user id:${userId}`);
+      return 'Complete registration with email confirmation';
     } catch (error) {
       this.logger.error(error);
-      throw errorsHandler(error as Error);
+      throw errorsHandler(
+        error as Error | ConflictException | ErrorEmailNotSent
+      );
     }
   }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Search for all users with pagination' })
-  @ApiResponse({
-    status: 200,
-    description: 'The found records',
-    type: PageDto<OutputUserDto>,
-  })
-  @Get()
-  async findAllWithPagination(
-    @Query() pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<OutputUserDto>> {
-    try {
-      const pageUsers: PageDto<OutputUserDto> =
-        await this.usersService.findAllWithPagination(pageOptionsDto);
-      return pageUsers;
-    } catch (error) {
-      this.logger.error(error);
-      throw errorsHandler(error as Error);
-    }
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Search the user by id' })
-  @ApiResponse({
-    status: 200,
-    description: 'The found record',
-    type: OutputUserDto,
-  })
-  @Get(':id')
-  async findId(@Param('id', ParseIntPipe) id: number): Promise<OutputUserDto> {
-    try {
-      const outputUser: OutputUserDto = await this.usersService.findId(id);
-      return outputUser;
-    } catch (error) {
-      this.logger.error(`User id:${id} findId, ${error}`);
-      throw errorsHandler(error as Error | ErrorUserNotFound);
-    }
-  }
-
-  @UseGuards(BasicAuthGuard, RolesGuard)
-  // @Authorizate(true)
-  @ApiBasicAuth()
-  @ApiOperation({ summary: 'Delete the user by id' })
-  @ApiResponse({
-    status: 200,
-    description: 'User delete message',
-    type: String,
-  })
-  @Delete(':id')
-  async deleteId(@Param('id', ParseIntPipe) id: number): Promise<string> {
-    try {
-      await this.usersService.deleteId(id);
-      return 'User deleted';
-    } catch (error) {
-      this.logger.error(`User id:${id} deleteId, ${error}`);
-      throw errorsHandler(error as Error | ErrorUserNotFound);
-    }
-  }
-
-  @UseGuards(BasicAuthGuard, RolesGuard)
-  // @Authorizate(true)
-  @ApiBasicAuth()
-  @ApiOperation({ summary: 'Update the user by id' })
-  @ApiBody({ type: UpdateUserDto })
-  @ApiResponse({
-    status: 200,
-    description: 'User update message',
-    type: String,
-  })
-  @Patch(':id')
-  async updateId(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<string> {
-    try {
-      await this.usersService.updateId(id, updateUserDto);
-      return 'User updated';
-    } catch (error) {
-      this.logger.error(`User id:${id} updateId, ${error}`);
-      throw errorsHandler(error as Error | ErrorUserNotFound);
-    }
-  }
-  */
 }

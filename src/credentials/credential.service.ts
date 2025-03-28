@@ -1,10 +1,10 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Credential } from './credential.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { InputCredentialDto } from '../dto/input.dto/input.credential.dto';
-import { plainToClass } from 'class-transformer';
+
 import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
+
 
 @Injectable()
 export class CredentialService {
@@ -14,7 +14,7 @@ export class CredentialService {
     private credentialsRepository: Repository<Credential>,
   ) {}
 
-  async findOne(username: string): Promise<Credential | null> {
+  async findOneUsername(username: string): Promise<Credential> {
     const credential = await this.credentialsRepository.findOneBy({ username });
     if (!credential) {
       this.logger.warn(`Credential ${username} not found`);
@@ -23,49 +23,14 @@ export class CredentialService {
     return credential;
   }
 
-  async signUp(
-    inputCredential: InputCredentialDto,
-  ): Promise<Partial<Credential>> {
-    const toCredential = plainToClass(Credential, inputCredential, {
-      excludeExtraneousValues: true,
-    });
-    try {
-      const credential: Credential =
-        await this.credentialsRepository.save(toCredential);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = credential;
-      this.logger.log(`Credential id:${credential.id} created`);
-      return result;
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (error.code === '23505') {
-        this.logger.warn(
-          `Credential with username ${inputCredential.username} already exist`,
-        );
-        throw new ConflictException(
-          'Credential with this username already exist',
-        );
-      }
-      throw error;
-    }
-  }
-  /*
-  async confirm(payloadCredential: Partial<Credential>): Promise<void> {
-    const id = payloadCredential.id;
+  async findOneId(id: number): Promise<Partial<Credential>> {
     const credential = await this.credentialsRepository.findOneBy({ id });
     if (!credential) {
-      this.logger.warn(
-        `Credential id: ${payloadCredential.id} from payload not found`,
-      );
+      this.logger.warn(`Credential ${id} not found`);
       throw new ErrorCredentialNotFound();
     }
-    if (credential.authorization !== true) {
-      credential.authorization = true;
-      await this.credentialsRepository.save(credential);
-      this.logger.log(
-        `Credential id: ${payloadCredential.id} confirmed by email`,
-      );
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...result } = credential;
+    return result;
   }
-  */
 }

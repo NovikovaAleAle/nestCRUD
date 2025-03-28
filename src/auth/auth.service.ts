@@ -1,18 +1,21 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger, BadRequestException} from '@nestjs/common';
 import { CredentialService } from '../credentials/credential.service';
 import { Credential } from '../credentials/credential.entity';
 import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from '../dto/output.dto/token.dto';
-import { isMatch } from './bcrypt.pass';
+import { isMatch } from '../helpers/bcrypt.pass.helper';
 import { MailService } from '../mail/mail.service';
-import { InputCredentialDto } from '../dto/input.dto/input.credential.dto';
-//import { InputTokenDto } from '../dto/input.dto/input.token.dto';
+import { InputTokenDto } from '../dto/input.dto/input.token.dto';
+import { Role } from '../config/constants';
+import { UsersService } from '../users/users.service';
+import { UserRoleDto } from '../dto/user.role.dto';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   constructor(
     private credentialService: CredentialService,
+    private usersService: UsersService,
     private jwtService: JwtService,
     private mailService: MailService,
   ) {}
@@ -21,7 +24,7 @@ export class AuthService {
     username: string,
     pass: string,
   ): Promise<Partial<Credential> | null> {
-    const credential = await this.credentialService.findOne(username);
+    const credential = await this.credentialService.findOneUsername(username);
     if (credential && (await isMatch(pass, credential.password))) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = credential;
@@ -40,28 +43,34 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
-
-  async signUp(inputCredential: InputCredentialDto): Promise<void> {
-    const credential: Partial<Credential> =
-      await this.credentialService.signUp(inputCredential);
-    await this.mailService.sendUserConfirmation(credential);
-    this.logger.log(`Confirmation id:${credential.id} email sent`);
-  }
-  /*
+ 
   async confirm(inputToken: InputTokenDto): Promise<void> {
     const payloadCredential: Partial<Credential> =
       await this.jwtService.verifyAsync(inputToken.token);
+    const id = payloadCredential.id;
+    if (!(id) || !(payloadCredential.username)) {
+      throw new BadRequestException(`Invalid token`);
+    }
     try {
-      await this.credentialService.confirm(payloadCredential);
+      const credential = await this.credentialService.findOneId(id);
+      if (credential.id && credential.username === payloadCredential.username) {
+        const user: UserRoleDto = await this.usersService.findUserbyIdCredential(credential.id);
+        if (user.role === Role.USER) {
+          this.logger.warn(`User id:${user.id}, role USER already exist`);
+          throw new ConflictException(`This email was already comfirmed`);
+        }
+        await this.usersService.setRole(user.id, Role.USER);
+        this.logger.log(`Email user id: ${user.id} comfirmed`);
+      }
     } catch (error) {
       this.logger.warn(error);
       throw error;
     }
   }
-
+  
   async reconfirm(credential: Partial<Credential>): Promise<void> {
     await this.mailService.sendUserConfirmation(credential);
     this.logger.log(`Confirmation id:${credential.id} email sent`);
   }
-  */
+
 }

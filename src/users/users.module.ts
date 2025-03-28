@@ -6,15 +6,15 @@ import { User } from './user.entity';
 import { KafkaModule } from '../kafka/kafka.module';
 import { Repository } from 'typeorm';
 import { Credential } from '../credentials/credential.entity';
-import { plainToClass } from 'class-transformer';
 import { Role } from '../config/constants';
 import { parseIntEnv, parseStringEnv } from '../helpers/parse.env.helper';
 import { Env } from '../config/constants';
+import { MailService } from 'src/mail/mail.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), KafkaModule],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, MailService],
   exports: [UsersService],
 })
 export class UsersModule implements OnModuleInit {
@@ -29,15 +29,12 @@ export class UsersModule implements OnModuleInit {
       credential.username = parseStringEnv(Env.CREDENTIAL_USERNAME);
       credential.password = parseStringEnv(Env.CREDENTIAL_PASSWORD);
       credential.email = parseStringEnv(Env.CREDENTIAL_EMAIL);
-      const toCredential = plainToClass(Credential, credential, {
-        excludeExtraneousValues: true,
-      });
       await this.userRepository.save({
         name: parseStringEnv(Env.ADMIN_NAME),
         surname: parseStringEnv(Env.ADMIN_SURNAME),
         age: parseIntEnv(Env.ADMIN_AGE),
         role: Role.ADMIN,
-        credential: toCredential,
+        credential: credential,
       });
       this.logger.log('Admin created');
     }

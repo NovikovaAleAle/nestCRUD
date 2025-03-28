@@ -4,12 +4,12 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class PageDto<OutputUserDto> {
   @ApiProperty({
-    description: 'list of records with the pagination option',
+    description: 'List of records with the pagination option',
     type: () => [OutputUserDto],
   })
   readonly data: OutputUserDto[];
 
-  @ApiProperty({ description: 'pagination metadata', type: () => PageMetaDto })
+  @ApiProperty({ description: 'Pagination metadata', type: () => PageMetaDto })
   readonly meta: PageMetaDto;
 
   constructor(data: OutputUserDto[], meta: PageMetaDto) {

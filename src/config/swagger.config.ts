@@ -11,7 +11,6 @@ export const configSwagger = new DocumentBuilder()
     description: 'Jwt bearer',
     bearerFormat: 'JWT',
   })
-  .addTag('users')
   .build();
 
 export const optionsSwagger: SwaggerDocumentOptions = {

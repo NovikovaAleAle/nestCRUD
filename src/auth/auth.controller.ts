@@ -3,30 +3,27 @@ import {
   UseGuards,
   Req,
   Get,
-  Post,
-  Body,
+  Query,
   UnauthorizedException,
   Logger,
   ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { BasicAuthGuard } from './basic.auth.guard';
+import { BasicAuthGuard } from './guards/basic.auth.guard';
 import {
   ApiOperation,
-  ApiBody,
   ApiResponse,
   ApiBasicAuth,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { TokenDto } from '../dto/output.dto/token.dto';
-import { InputCredentialDto } from '../dto/input.dto/input.credential.dto';
-//import { InputTokenDto } from '../dto/input.dto/input.token.dto';
+import { InputTokenDto } from '../dto/input.dto/input.token.dto';
 import { errorsHandler } from '../error/errors.handler';
-//import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
-import { RolesGuard } from './roles/roles.guard';
-//import { Authorizate } from './authorizate/authorizate.decorator';
+import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
+import { RolesGuard } from './guards/roles/roles.guard';
 import { ErrorEmailNotSent } from '../error/error.email-not-sent';
-import { Roles } from './roles/roles.decorator';
+import { Roles } from './guards/roles/roles.decorator';
 import { Role } from '../config/constants';
 
 @Controller('auth')
@@ -35,7 +32,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(BasicAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @Roles([Role.ADMIN, Role.USER, Role.GHOST]) // Role.GHOST временный, под удаление
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Login' })
   @ApiResponse({
@@ -55,26 +52,6 @@ export class AuthController {
     }
   }
 
-  @ApiOperation({ summary: 'Register credential' })
-  @ApiBody({ type: InputCredentialDto })
-  @ApiResponse({
-    status: 200,
-    description: 'Message about the need to confirm registration',
-    type: String,
-  })
-  @Post('register')
-  async signUp(@Body() inputCredential: InputCredentialDto): Promise<string> {
-    try {
-      await this.authService.signUp(inputCredential);
-      return 'Complete registration with email confirmation';
-    } catch (error) {
-      this.logger.error(error);
-      throw errorsHandler(
-        error as Error | ConflictException | ErrorEmailNotSent,
-      );
-    }
-  }
-  /*
   @ApiOperation({ summary: 'Сredential confirmation at the link' })
   @ApiResponse({
     status: 200,
@@ -88,7 +65,9 @@ export class AuthController {
       return 'Email confirm';
     } catch (error) {
       this.logger.error(error);
-      throw errorsHandler(error as Error | ErrorCredentialNotFound);
+      throw errorsHandler(
+        error as Error | ErrorCredentialNotFound | BadRequestException,
+      );
     }
   }
 
@@ -114,6 +93,6 @@ export class AuthController {
         error as Error | ConflictException | ErrorEmailNotSent,
       );
     }
-  }
-  */
+  }  
+
 }

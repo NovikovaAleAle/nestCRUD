@@ -9,7 +9,7 @@ import { Credential } from '../credentials/credential.entity';
 import { Role } from '../config/constants';
 import { parseIntEnv, parseStringEnv } from '../helpers/parse.env.helper';
 import { Env } from '../config/constants';
-import { MailService } from 'src/mail/mail.service';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), KafkaModule],

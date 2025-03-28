@@ -29,8 +29,8 @@ import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageDto } from '../dto/output.dto/page.dto';
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { UsersService } from '../users/users.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.auth.guard';
-import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
+import { RolesGuard } from '../auth/guards/roles/roles.guard';
 
 
 @ApiTags('Admin')
@@ -40,8 +40,8 @@ export class AdminController {
   private readonly logger = new Logger(AdminController.name);
 
   constructor(
-    private adminService: AdminService,
-    private usersService: UsersService,
+    private readonly adminService: AdminService,
+    private readonly usersService: UsersService,
   ) {}
   
   @UseGuards(JwtAuthGuard, RolesGuard)

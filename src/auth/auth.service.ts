@@ -12,12 +12,14 @@ import { UserRoleDto } from '../dto/user.role.dto';
 
 @Injectable()
 export class AuthService {
+
   private readonly logger = new Logger(AuthService.name);
+  
   constructor(
-    private credentialService: CredentialService,
-    private usersService: UsersService,
-    private jwtService: JwtService,
-    private mailService: MailService,
+    private readonly credentialService: CredentialService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async validateCredential(
@@ -55,15 +57,18 @@ export class AuthService {
       const credential = await this.credentialService.findOneId(id);
       if (credential.id && credential.username === payloadCredential.username) {
         const user: UserRoleDto = await this.usersService.findUserbyIdCredential(credential.id);
-        if (user.role === Role.USER) {
-          this.logger.warn(`User id:${user.id}, role USER already exist`);
+        if (user.role !== Role.USER) {
+          await this.usersService.setRole(user.id, Role.USER);
+          this.logger.log(`Email user id: ${user.id} comfirmed`);
+        } else {
+          this.logger.warn(`User id:${user.id}, role already exist`);
           throw new ConflictException(`This email was already comfirmed`);
         }
-        await this.usersService.setRole(user.id, Role.USER);
-        this.logger.log(`Email user id: ${user.id} comfirmed`);
       }
     } catch (error) {
-      this.logger.warn(error);
+      if (!(error instanceof ConflictException)) {
+        this.logger.warn(error);
+      }
       throw error;
     }
   }

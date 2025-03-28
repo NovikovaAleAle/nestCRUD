@@ -4,10 +4,10 @@ import { UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class BasicAuthGuard extends AuthGuard('basic') {
-  handleRequest(error: any, credential: any): any {
-    if (error || !credential) {
+  handleRequest(error: any, credentialReq: any): any {
+    if (error || !credentialReq) {
       throw error || new UnauthorizedException();
     }
-    return credential;
+    return credentialReq;
   }
 }

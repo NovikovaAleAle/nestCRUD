@@ -10,14 +10,14 @@ import { ROLE_KEY } from '../../../config/constants';
 import { Request } from 'express';
 import { UsersService } from '../../../users/users.service';
 import { Credential } from '../../../credentials/credential.entity';
-import { UserRoleDto } from 'src/dto/user.role.dto';
+import { UserRoleDto } from '../../../dto/user.role.dto';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   private readonly logger = new Logger(RolesGuard.name);
   constructor(
-    private usersService: UsersService,
-    private reflector: Reflector,
+    private readonly usersService: UsersService,
+    private readonly reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

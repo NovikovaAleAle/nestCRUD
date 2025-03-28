@@ -22,8 +22,8 @@ export class UsersController {
   private readonly logger = new Logger(UsersController.name);
 
   constructor(
-    private usersService: UsersService,
-    private mailService: MailService,
+    private readonly usersService: UsersService,
+    private readonly mailService: MailService,
   ) {}
 
   @ApiOperation({ summary: 'Register user' })

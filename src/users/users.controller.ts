@@ -7,18 +7,13 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { errorsHandler } from '../error/errors.handler';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { CreateUserDto } from 'src/dto/input.dto/create.user.dto';
 import { ErrorEmailNotSent } from '../error/error.email-not-sent';
 import { MailService } from '../mail/mail.service';
 
 @Controller('users')
 export class UsersController {
-
   private readonly logger = new Logger(UsersController.name);
 
   constructor(
@@ -43,7 +38,7 @@ export class UsersController {
     } catch (error) {
       this.logger.error(error);
       throw errorsHandler(
-        error as Error | ConflictException | ErrorEmailNotSent
+        error as Error | ConflictException | ErrorEmailNotSent,
       );
     }
   }

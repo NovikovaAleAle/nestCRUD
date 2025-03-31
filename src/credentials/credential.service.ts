@@ -5,7 +5,6 @@ import { Repository } from 'typeorm';
 
 import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
 
-
 @Injectable()
 export class CredentialService {
   private readonly logger = new Logger(CredentialService.name);

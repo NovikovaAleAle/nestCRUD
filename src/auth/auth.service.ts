@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, Logger, BadRequestException} from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
 import { CredentialService } from '../credentials/credential.service';
 import { Credential } from '../credentials/credential.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -12,9 +17,7 @@ import { UserRoleDto } from '../dto/user.role.dto';
 
 @Injectable()
 export class AuthService {
-
   private readonly logger = new Logger(AuthService.name);
-  
   constructor(
     private readonly credentialService: CredentialService,
     private readonly usersService: UsersService,
@@ -45,18 +48,19 @@ export class AuthService {
       access_token: await this.jwtService.signAsync(payload),
     };
   }
- 
+
   async confirm(inputToken: InputTokenDto): Promise<void> {
     const payloadCredential: Partial<Credential> =
       await this.jwtService.verifyAsync(inputToken.token);
     const id = payloadCredential.id;
-    if (!(id) || !(payloadCredential.username)) {
+    if (!id || !payloadCredential.username) {
       throw new BadRequestException(`Invalid token`);
     }
     try {
       const credential = await this.credentialService.findOneId(id);
       if (credential.id && credential.username === payloadCredential.username) {
-        const user: UserRoleDto = await this.usersService.findUserbyIdCredential(credential.id);
+        const user: UserRoleDto =
+          await this.usersService.findUserbyIdCredential(credential.id);
         if (user.role !== Role.USER) {
           await this.usersService.setRole(user.id, Role.USER);
           this.logger.log(`Email user id: ${user.id} comfirmed`);
@@ -72,10 +76,9 @@ export class AuthService {
       throw error;
     }
   }
-  
+
   async reconfirm(credential: Partial<Credential>): Promise<void> {
     await this.mailService.sendUserConfirmation(credential);
     this.logger.log(`Confirmation id:${credential.id} email sent`);
   }
-
 }

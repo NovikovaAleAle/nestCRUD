@@ -32,14 +32,15 @@ export class RolesGuard implements CanActivate {
     const credentialReq = req.user as Partial<Credential>;
     const credentialId = credentialReq.id;
     if (credentialId) {
-      const user: UserRoleDto = await this.usersService.findUserbyIdCredential(credentialId);
-        if (!(user.role && requiredRoles.includes(user.role))) {
-          this.logger.warn(`User id:${user.id} not confirmed`);
-          throw new ForbiddenException();
-        }
-        this.logger.log(`User id:${user.id} confirmed`);
-        return true;
-    } 
+      const user: UserRoleDto =
+        await this.usersService.findUserbyIdCredential(credentialId);
+      if (!(user.role && requiredRoles.includes(user.role))) {
+        this.logger.warn(`User id:${user.id} not confirmed`);
+        throw new ForbiddenException();
+      }
+      this.logger.log(`User id:${user.id} confirmed`);
+      return true;
+    }
     return false;
   }
 }

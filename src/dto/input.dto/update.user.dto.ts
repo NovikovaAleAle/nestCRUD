@@ -7,15 +7,20 @@ import { ValidateNested } from 'class-validator';
 class UpdateInputUserDto extends PartialType(InputUserDto) {}
 class UpdateCredentialDto extends PartialType(InputCredentialDto) {}
 
-
 export class UpdateUserDto {
-    @ApiPropertyOptional({ description: 'User data', type: () => UpdateInputUserDto })
-    @ValidateNested()
-    @Type(() => UpdateInputUserDto)
-    readonly user: UpdateInputUserDto;
-    
-    @ApiPropertyOptional({ description: 'Credential data', type: () => UpdateCredentialDto })
-    @ValidateNested()
-    @Type(() => UpdateCredentialDto)
-    readonly credential: UpdateCredentialDto;
+  @ApiPropertyOptional({
+    description: 'User data',
+    type: () => UpdateInputUserDto,
+  })
+  @ValidateNested()
+  @Type(() => UpdateInputUserDto)
+  readonly user: UpdateInputUserDto;
+
+  @ApiPropertyOptional({
+    description: 'Credential data',
+    type: () => UpdateCredentialDto,
+  })
+  @ValidateNested()
+  @Type(() => UpdateCredentialDto)
+  readonly credential: UpdateCredentialDto;
 }

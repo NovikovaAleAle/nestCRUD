@@ -14,7 +14,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { AdminModule } from './admin/admin.module';
 import mailerConfig from './config/mailer.config';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

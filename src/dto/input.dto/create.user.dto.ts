@@ -10,7 +10,10 @@ export class CreateUserDto {
   @Type(() => InputUserDto)
   readonly user: InputUserDto;
 
-  @ApiProperty({ description: 'Credential data', type: () => InputCredentialDto })
+  @ApiProperty({
+    description: 'Credential data',
+    type: () => InputCredentialDto,
+  })
   @ValidateNested()
   @Type(() => InputCredentialDto)
   readonly credential: InputCredentialDto;

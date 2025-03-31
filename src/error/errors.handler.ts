@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { ErrorUserNotFound } from './error.user-not-found';
 import { ErrorCredentialNotFound } from './error.credential-not-found';
 import { ErrorEmailNotSent } from './error.email-not-sent';

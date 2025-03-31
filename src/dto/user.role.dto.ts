@@ -1,4 +1,4 @@
-import { Role } from "../config/constants";
+import { Role } from '../config/constants';
 
 export interface UserRoleDto {
   id: number;

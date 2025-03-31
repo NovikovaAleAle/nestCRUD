@@ -11,11 +11,7 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { BasicAuthGuard } from './guards/basic.auth.guard';
-import {
-  ApiOperation,
-  ApiResponse,
-  ApiBasicAuth,
-} from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiBasicAuth } from '@nestjs/swagger';
 import { Request } from 'express';
 import { TokenDto } from '../dto/output.dto/token.dto';
 import { InputTokenDto } from '../dto/input.dto/input.token.dto';
@@ -29,7 +25,7 @@ import { Role } from '../config/constants';
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
-  constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
   @UseGuards(BasicAuthGuard, RolesGuard)
   @Roles([Role.ADMIN, Role.USER, Role.GHOST]) // Role.GHOST временный, под удаление
@@ -93,6 +89,5 @@ export class AuthController {
         error as Error | ConflictException | ErrorEmailNotSent,
       );
     }
-  }  
-
+  }
 }

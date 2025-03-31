@@ -32,7 +32,6 @@ import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
 import { RolesGuard } from '../auth/guards/roles/roles.guard';
 
-
 @ApiTags('Admin')
 @ApiBearerAuth()
 @Controller('admin')
@@ -43,7 +42,7 @@ export class AdminController {
     private readonly adminService: AdminService,
     private readonly usersService: UsersService,
   ) {}
-  
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([Role.ADMIN])
   @ApiOperation({ summary: 'Create user with role USER' })

@@ -44,9 +44,7 @@ export class UsersService {
         this.logger.warn(
           `User with username ${toCredential.username} already exist`,
         );
-        throw new ConflictException(
-          'User with this username already exist',
-        );
+        throw new ConflictException('User with this username already exist');
       }
       throw error;
     }
@@ -123,9 +121,7 @@ export class UsersService {
     this.logger.log(`User with id:${id} updated`);
   }
 
-  async findUserbyIdCredential(
-    credentialId: number,
-  ): Promise<UserRoleDto> {
+  async findUserbyIdCredential(credentialId: number): Promise<UserRoleDto> {
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
     const user = await queryBuilder
       .innerJoinAndSelect('user.credential', 'credential')

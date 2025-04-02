@@ -4,7 +4,7 @@ import { Repository, DeleteResult } from 'typeorm';
 import { User } from './user.entity';
 import { ErrorUserNotFound } from '../error/error.user-not-found';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
-import { PageDto } from '../dto/output.dto/page.dto';
+import { PageUsersDto } from '../dto/output.dto/page.users.dto';
 import { PageMetaDto } from '../dto/page.meta.dto';
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
@@ -66,7 +66,7 @@ export class UsersService {
 
   async findAllWithPagination(
     pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<OutputUserDto>> {
+  ): Promise<PageUsersDto<OutputUserDto>> {
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
     const totalItemCount: number = await queryBuilder.getCount();
     const users: User[] = await queryBuilder
@@ -81,7 +81,7 @@ export class UsersService {
     );
     const pageMetaDto = new PageMetaDto(totalItemCount, pageOptionsDto);
     this.logger.log('Uploading a list of users');
-    return new PageDto(outputUsers, pageMetaDto);
+    return new PageUsersDto(outputUsers, pageMetaDto);
   }
 
   async findId(id: number): Promise<OutputUserDto> {
@@ -133,5 +133,15 @@ export class UsersService {
     }
     this.logger.log(`User role for credential id:${credentialId} found`);
     return { id: user.id, role: user.role };
+  }
+
+  async findIdForPost(id: number): Promise<User> {
+    const user: User | null = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      this.logger.warn(`User with id:${id} not found`);
+      throw new ErrorUserNotFound();
+    }
+    this.logger.log(`User with id:${id} found`);
+    return user;
   }
 }

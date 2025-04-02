@@ -26,7 +26,7 @@ import { errorsHandler } from '../error/errors.handler';
 import { ErrorUserNotFound } from '../error/error.user-not-found';
 import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
-import { PageDto } from '../dto/output.dto/page.dto';
+import { PageUsersDto } from '../dto/output.dto/page.users.dto';
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
@@ -111,14 +111,14 @@ export class AdminController {
   @ApiResponse({
     status: 200,
     description: 'The found records',
-    type: PageDto<OutputUserDto>,
+    type: PageUsersDto<OutputUserDto>,
   })
   @Get('users')
   async findAllUsersWithPagination(
     @Query() pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<OutputUserDto>> {
+  ): Promise<PageUsersDto<OutputUserDto>> {
     try {
-      const pageUsers: PageDto<OutputUserDto> =
+      const pageUsers: PageUsersDto<OutputUserDto> =
         await this.usersService.findAllWithPagination(pageOptionsDto);
       return pageUsers;
     } catch (error) {

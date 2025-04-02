@@ -4,7 +4,7 @@ import { CreateUserDto } from '../dto/input.dto/create.user.dto';
 import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
 import { Role } from '../config/constants';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
-import { PageDto } from '../dto/output.dto/page.dto';
+import { PageUsersDto } from '../dto/output.dto/page.users.dto';
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
 
 @Injectable()
@@ -30,7 +30,7 @@ export class AdminService {
 
   async findAllUsersWithPagination(
     pageOptionsDto: PageOptionsDto,
-  ): Promise<PageDto<OutputUserDto>> {
+  ): Promise<PageUsersDto<OutputUserDto>> {
     return await this.usersService.findAllWithPagination(pageOptionsDto);
   }
 

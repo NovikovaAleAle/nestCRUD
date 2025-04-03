@@ -86,7 +86,15 @@ export class AuthService {
   }
 
   async reconfirm(credential: Partial<Credential>): Promise<void> {
-    await this.mailService.sendUserConfirmation(credential);
-    this.logger.log(`Confirmation id:${credential.id} email sent`);
+    if (credential.id) {
+      const user: UserRoleDto =
+        await this.usersService.findUserRolebyIdCredential(credential.id);
+      if (user.role === Role.USER) {
+        this.logger.warn(`User id:${user.id}, role already exist`);
+        throw new ConflictException(`This email was already comfirmed`);
+      }
+      await this.mailService.sendUserConfirmation(credential);
+      this.logger.log(`Confirmation id:${credential.id} email sent`);
+    }
   }
 }

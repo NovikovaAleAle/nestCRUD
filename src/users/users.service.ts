@@ -59,6 +59,10 @@ export class UsersService {
       this.logger.warn(`UpdatableUser with id:${userId} not found`);
       throw new ErrorUserNotFound();
     }
+    if (updatableUser.role === role) {
+      this.logger.warn(`The role for user id:${userId} already exist`);
+      throw new ConflictException();
+    }
     updatableUser.role = role;
     await this.usersRepository.save(updatableUser);
     this.logger.log(`Role ${role} for user id: ${userId} set`);

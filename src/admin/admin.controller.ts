@@ -10,6 +10,7 @@ import {
   Get,
   Query,
   UseGuards,
+  ConflictException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -144,6 +145,29 @@ export class AdminController {
     } catch (error) {
       this.logger.error(`findUserById, user id:${id}, ${error}`);
       throw errorsHandler(error as Error | ErrorUserNotFound);
+    }
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.ADMIN])
+  @ApiOperation({ summary: 'Update the user role on USER' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successful update role message',
+    type: String,
+  })
+  @Get('users/:id/role')
+  async updateRoleOnUser(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<string> {
+    try {
+      await this.adminService.updateRoleOnUser(id);
+      return 'User role updated';
+    } catch (error) {
+      this.logger.error(`updateRoleOnUser, user id:${id},${error}`);
+      throw errorsHandler(
+        error as Error | ErrorUserNotFound | ConflictException,
+      );
     }
   }
 }

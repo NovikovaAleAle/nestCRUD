@@ -22,7 +22,7 @@ export class OutputPostDto {
   readonly content: string;
 
   @ApiProperty({
-    description: 'Url of the image. May be undefind',
+    description: 'Url of the image. May be null',
     nullable: true,
   })
   @Expose()

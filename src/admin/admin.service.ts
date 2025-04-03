@@ -37,4 +37,8 @@ export class AdminService {
   async findUserById(id: number): Promise<OutputUserDto> {
     return await this.usersService.findId(id);
   }
+
+  async updateRoleOnUser(userId: number): Promise<void> {
+    await this.usersService.setRole(userId, Role.USER);
+  }
 }

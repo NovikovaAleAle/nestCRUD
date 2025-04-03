@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserPost } from './user.post.entity';
@@ -11,6 +11,8 @@ import { OutputPostDto } from '../dto/output.dto/output.post.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PagePostsDto } from '../dto/output.dto/page.posts.dto';
 import { PageMetaDto } from '../dto/page.meta.dto';
+import { BufferedFileDto } from '../dto/input.dto/buffered.file.dto';
+import { MinioClientService } from '../minio-client/minio.client.service';
 
 @Injectable()
 export class UserPostsService {
@@ -18,7 +20,8 @@ export class UserPostsService {
   constructor(
     @InjectRepository(UserPost)
     private userPostsRepository: Repository<UserPost>,
-    private usersService: UsersService,
+    private readonly usersService: UsersService,
+    private readonly minioClientService: MinioClientService,
   ) {}
 
   async createPost(userId: number, inputPostDto: InputPostDto): Promise<void> {
@@ -32,7 +35,7 @@ export class UserPostsService {
   }
 
   async deletePostById(userId: number, postId: number): Promise<void> {
-    const post = await this.userPostsRepository.findOne({
+    const post: UserPost | null = await this.userPostsRepository.findOne({
       where: { id: postId, user: { id: userId } },
     });
     if (!post) {
@@ -48,7 +51,7 @@ export class UserPostsService {
     postId: number,
     updatePostDto: UpdatePostDto,
   ): Promise<void> {
-    const post = await this.userPostsRepository.findOne({
+    const post: UserPost | null = await this.userPostsRepository.findOne({
       where: { id: postId, user: { id: userId } },
     });
     if (!post) {
@@ -71,7 +74,7 @@ export class UserPostsService {
         'post.id',
         'post.title',
         'post.content',
-        'post.photo',
+        'post.image',
         'user.id',
         'user.name',
       ])
@@ -106,5 +109,46 @@ export class UserPostsService {
     });
     this.logger.log(`Post with id:${postId} found`);
     return outputUser;
+  }
+
+  async uploadImage(postId: number, image: BufferedFileDto): Promise<void> {
+    const id = postId;
+    const post: UserPost | null = await this.userPostsRepository.findOneBy({
+      id,
+    });
+    if (!post) {
+      this.logger.warn(`Post with id:${postId} not found`);
+      throw new ErrorPostNotFound();
+    }
+    const urlImage = await this.minioClientService.upload(image);
+    post.image = urlImage.url;
+    await this.userPostsRepository.save(post);
+    this.logger.log('Image saved');
+  }
+
+  async removeImage(postId: number): Promise<void> {
+    const id = postId;
+    const post: UserPost | null = await this.userPostsRepository.findOneBy({
+      id,
+    });
+    if (!post) {
+      this.logger.warn(`Post with id:${postId} not found`);
+      throw new ErrorPostNotFound();
+    }
+    if (post.image !== null) {
+      const parts = post.image.split('/');
+      const extractedFilename = parts.pop();
+      if (!extractedFilename) {
+        this.logger.warn(`File name extraction error, post id:${postId}`);
+        throw new Error('File name extraction error');
+      }
+      await this.minioClientService.remove(extractedFilename);
+      post.image = null;
+      await this.userPostsRepository.save(post);
+      this.logger.log('Image removed');
+    } else {
+      this.logger.warn(`Image missing from the post id:${postId}`);
+      throw new ConflictException('Image missing from the post');
+    }
   }
 }

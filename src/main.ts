@@ -17,7 +17,7 @@ async function bootstrap() {
       }),
     });
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true }),
+      new ValidationPipe({ transform: true }), //whitelist: true
     );
 
     const documentFactory = () =>

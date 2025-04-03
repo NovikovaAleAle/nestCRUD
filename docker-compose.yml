@@ -84,10 +84,25 @@ services:
                cub kafka-ready -b kafka:9093 1 30 && \
                kafka-topics --create --topic ${KAFFKA_TOPIC} --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:9093'"
 
+  minio:
+    container_name: minio
+    image: minio/minio:latest
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "${MINIO_API_PORT}:9000"
+      - "${MINIO_CONSOLE_PORT}:9001"
+    command: server /data --console-address ":${MINIO_CONSOLE_PORT}"
+    volumes:
+      - minio-data:/data
+    restart: unless-stopped
+
 volumes:
   pg-data:
   pgadmin-data:
   kafka-ui-data:
+  minio-data:
 
 networks:
   postgres:

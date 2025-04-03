@@ -14,13 +14,15 @@ import { JwtModule } from '@nestjs/jwt';
 import { AdminModule } from './admin/admin.module';
 import { UserPostsModule } from './user.posts/user.posts.module';
 import mailerConfig from './config/mailer.config';
+import minioConfig from './config/minio.config';
+import { MinioClientModule } from './minio-client/minio.client.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env'],
-      load: [databaseConfig, kafkaConfig, jwtConfig, mailerConfig],
+      load: [databaseConfig, kafkaConfig, jwtConfig, mailerConfig, minioConfig],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule.forFeature(databaseConfig)],
@@ -46,6 +48,7 @@ import mailerConfig from './config/mailer.config';
     MailModule,
     AdminModule,
     UserPostsModule,
+    MinioClientModule,
   ],
 })
 export class AppModule {

@@ -22,10 +22,10 @@ export class OutputPostDto {
   readonly content: string;
 
   @ApiProperty({
-    description: 'Url of the photo. May be null',
+    description: 'Url of the image. May be undefind',
     nullable: true,
   })
   @Expose()
   @Allow()
-  readonly photo: string;
+  readonly image: string;
 }

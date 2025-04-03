@@ -9,15 +9,24 @@ import {
   Patch,
   Query,
   ParseIntPipe,
+  ParseFilePipe,
   //UseGuards,
+  UseInterceptors,
+  UploadedFile,
+  MaxFileSizeValidator,
+  FileTypeValidator,
+  HttpException,
+  ConflictException,
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiTags,
   ApiOperation,
   ApiResponse,
+  ApiConsumes,
   //ApiBearerAuth,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UserPostsService } from './user.posts.service';
 import { InputPostDto } from '../dto/input.dto/input.post.dto';
 import { UpdatePostDto } from '../dto/input.dto/update.post.dto';
@@ -27,6 +36,7 @@ import { ErrorPostNotFound } from '../error/error.post-not-found';
 import { OutputPostDto } from '../dto/output.dto/output.post.dto';
 import { PagePostsDto } from '../dto/output.dto/page.posts.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
+import { BufferedFileDto } from '../dto/input.dto/buffered.file.dto';
 //import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
 //import { RolesGuard } from '../auth/guards/roles/roles.guard';
 //import { Roles } from '../auth/guards/roles/roles.decorator';
@@ -155,6 +165,73 @@ export class UserPostsController {
     } catch (error) {
       this.logger.error(`findPostById, post id:${postId}, ${error}`);
       throw errorsHandler(error as Error | ErrorPostNotFound);
+    }
+  }
+  //@UseGuards(JwtAuthGuard, RolesGuard)
+  //@Roles([Role.USER])
+  @ApiOperation({ summary: 'Upload image in the user post' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Image for upload',
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+          description: 'MIME-type: image/png, image/jpeg, image/jpg',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successful upload message',
+    type: String,
+  })
+  @Post(':idpost')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadImage(
+    @Param('idpost', ParseIntPipe) postId: number,
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 5 * 1024 * 1024 }),
+          new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        ],
+      }),
+    )
+    image: BufferedFileDto,
+  ): Promise<string> {
+    try {
+      await this.userPostsService.uploadImage(postId, image);
+      return 'Image upload';
+    } catch (error) {
+      this.logger.error(`uploadImage, post id:${postId}, ${error}`);
+      throw errorsHandler(error as Error | HttpException | ErrorPostNotFound);
+    }
+  }
+
+  //@UseGuards(JwtAuthGuard, RolesGuard)
+  //@Roles([Role.USER])
+  @ApiOperation({ summary: 'Remove the image from the user post' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successful remove message',
+    type: String,
+  })
+  @Delete(':idpost/image')
+  async removeImage(
+    @Param('idpost', ParseIntPipe) postId: number,
+  ): Promise<string> {
+    try {
+      await this.userPostsService.removeImage(postId);
+      return 'Image removed';
+    } catch (error) {
+      this.logger.error(`removeImage, post id:${postId}, ${error}`);
+      throw errorsHandler(
+        error as Error | HttpException | ErrorPostNotFound | ConflictException,
+      );
     }
   }
 }

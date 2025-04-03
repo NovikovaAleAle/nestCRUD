@@ -17,9 +17,11 @@ export class UserPost {
   content: string;
 
   @Column({
+    type: 'varchar',
+    nullable: true,
     default: null,
   })
-  photo: string;
+  image: string | null;
 
   @ManyToOne(() => User, (user) => user.userPosts)
   user: User;

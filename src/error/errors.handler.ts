@@ -19,7 +19,8 @@ export const errorsHandler = (error: Error): HttpException => {
   }
   if (
     error instanceof ConflictException ||
-    error instanceof BadRequestException
+    error instanceof BadRequestException ||
+    error instanceof HttpException
   ) {
     throw error;
   }

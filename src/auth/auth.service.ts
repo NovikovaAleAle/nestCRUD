@@ -14,6 +14,7 @@ import { InputTokenDto } from '../dto/input.dto/input.token.dto';
 import { Role } from '../config/constants';
 import { UsersService } from '../users/users.service';
 import { UserRoleDto } from '../dto/user.role.dto';
+import { ErrorCredentialNotFound } from 'src/error/error.credential-not-found';
 
 @Injectable()
 export class AuthService {
@@ -39,9 +40,16 @@ export class AuthService {
   }
 
   async login(credential: Partial<Credential>): Promise<TokenDto> {
+    const credentialId = credential.id;
+    if (!credentialId) {
+      throw new ErrorCredentialNotFound();
+    }
+    const userRole: UserRoleDto =
+      await this.usersService.findUserRolebyIdCredential(credentialId);
     const payload = {
       username: credential.username,
       id: credential.id,
+      role: userRole.role,
     };
     this.logger.log('JWT token created');
     return {
@@ -60,7 +68,7 @@ export class AuthService {
       const credential = await this.credentialService.findOneId(id);
       if (credential.id && credential.username === payloadCredential.username) {
         const user: UserRoleDto =
-          await this.usersService.findUserbyIdCredential(credential.id);
+          await this.usersService.findUserRolebyIdCredential(credential.id);
         if (user.role !== Role.USER) {
           await this.usersService.setRole(user.id, Role.USER);
           this.logger.log(`Email user id: ${user.id} comfirmed`);

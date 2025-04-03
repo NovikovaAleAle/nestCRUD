@@ -33,7 +33,7 @@ export class User {
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.GHOST,
+    default: Role.GUEST,
   })
   role: Role;
 

@@ -2,7 +2,6 @@ import { BasicStrategy } from 'passport-http';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { AuthService } from '../auth.service';
-import { Credential } from '../../credentials/credential.entity';
 
 @Injectable()
 export class AppBasicStrategy extends PassportStrategy(BasicStrategy) {
@@ -11,10 +10,7 @@ export class AppBasicStrategy extends PassportStrategy(BasicStrategy) {
     super();
   }
 
-  async validate(
-    username: string,
-    password: string,
-  ): Promise<Partial<Credential>> {
+  async validate(username: string, password: string): Promise<boolean> {
     try {
       const credential = await this.authSerice.validateCredential(
         username,
@@ -25,7 +21,7 @@ export class AppBasicStrategy extends PassportStrategy(BasicStrategy) {
         throw new UnauthorizedException();
       }
       this.logger.log(`Credential ${username} found`);
-      return credential;
+      return true;
     } catch (error) {
       this.logger.error(`Basic Auth validate, ${error}`);
       throw new UnauthorizedException();

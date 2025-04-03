@@ -121,7 +121,7 @@ export class UsersService {
     this.logger.log(`User with id:${id} updated`);
   }
 
-  async findUserbyIdCredential(credentialId: number): Promise<UserRoleDto> {
+  async findUserRolebyIdCredential(credentialId: number): Promise<UserRoleDto> {
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
     const user = await queryBuilder
       .innerJoinAndSelect('user.credential', 'credential')

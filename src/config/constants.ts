@@ -4,7 +4,7 @@ export const ROLE_KEY = 'role';
 export enum Role {
   ADMIN = 'admin',
   USER = 'user',
-  GHOST = 'ghost',
+  GUEST = 'guest',
 }
 
 export enum Env {

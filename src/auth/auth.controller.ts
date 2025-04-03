@@ -17,18 +17,14 @@ import { TokenDto } from '../dto/output.dto/token.dto';
 import { InputTokenDto } from '../dto/input.dto/input.token.dto';
 import { errorsHandler } from '../error/errors.handler';
 import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
-import { RolesGuard } from './guards/roles/roles.guard';
 import { ErrorEmailNotSent } from '../error/error.email-not-sent';
-import { Roles } from './guards/roles/roles.decorator';
-import { Role } from '../config/constants';
 
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
   constructor(private readonly authService: AuthService) {}
 
-  @UseGuards(BasicAuthGuard, RolesGuard)
-  @Roles([Role.ADMIN, Role.USER, Role.GHOST]) // Role.GHOST временный, под удаление
+  @UseGuards(BasicAuthGuard)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Login' })
   @ApiResponse({
@@ -67,7 +63,7 @@ export class AuthController {
     }
   }
 
-  @UseGuards(BasicAuthGuard, RolesGuard)
+  @UseGuards(BasicAuthGuard)
   @ApiBasicAuth()
   @ApiOperation({ summary: 'Сredential reconfirmation at the link' })
   @ApiResponse({

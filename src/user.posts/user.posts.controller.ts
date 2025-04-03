@@ -10,7 +10,7 @@ import {
   Query,
   ParseIntPipe,
   ParseFilePipe,
-  //UseGuards,
+  UseGuards,
   UseInterceptors,
   UploadedFile,
   MaxFileSizeValidator,
@@ -24,7 +24,7 @@ import {
   ApiOperation,
   ApiResponse,
   ApiConsumes,
-  //ApiBearerAuth,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UserPostsService } from './user.posts.service';
@@ -37,20 +37,20 @@ import { OutputPostDto } from '../dto/output.dto/output.post.dto';
 import { PagePostsDto } from '../dto/output.dto/page.posts.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { BufferedFileDto } from '../dto/input.dto/buffered.file.dto';
-//import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
-//import { RolesGuard } from '../auth/guards/roles/roles.guard';
-//import { Roles } from '../auth/guards/roles/roles.decorator';
-//import { Role } from '../config/constants';
+import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
+import { RolesGuard } from '../auth/guards/roles/roles.guard';
+import { Roles } from '../auth/guards/roles/roles.decorator';
+import { Role } from '../config/constants';
 
 @ApiTags('User Posts')
-//@ApiBearerAuth()
+@ApiBearerAuth()
 @Controller('users/:id/posts')
 export class UserPostsController {
   private readonly logger = new Logger(UserPostsController.name);
   constructor(private readonly userPostsService: UserPostsService) {}
 
-  //@UseGuards(JwtAuthGuard, RolesGuard)
-  //@Roles([Role.USER])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.USER])
   @ApiOperation({ summary: 'Creation of a post by a user' })
   @ApiBody({ type: InputPostDto })
   @ApiResponse({
@@ -72,8 +72,8 @@ export class UserPostsController {
     }
   }
 
-  //@UseGuards(JwtAuthGuard, RolesGuard)
-  //@Roles([Role.USER])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.USER])
   @ApiOperation({ summary: 'Deleting the user post by id' })
   @ApiResponse({
     status: 200,
@@ -96,8 +96,8 @@ export class UserPostsController {
     }
   }
 
-  //@UseGuards(JwtAuthGuard, RolesGuard)
-  //@Roles([Role.USER])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.USER])
   @ApiOperation({ summary: 'Updating the user post by id' })
   @ApiBody({ type: UpdatePostDto })
   @ApiResponse({
@@ -122,8 +122,8 @@ export class UserPostsController {
     }
   }
 
-  //@UseGuards(JwtAuthGuard, RolesGuard)
-  //@Roles([Role.USER])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.USER])
   @ApiOperation({ summary: 'Search for all user posts with pagination' })
   @ApiResponse({
     status: 200,
@@ -147,8 +147,8 @@ export class UserPostsController {
     }
   }
 
-  //@UseGuards(JwtAuthGuard, RolesGuard)
-  //@Roles([Role.USER])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.USER])
   @ApiOperation({ summary: 'Search the user post by id' })
   @ApiResponse({
     status: 200,
@@ -167,8 +167,8 @@ export class UserPostsController {
       throw errorsHandler(error as Error | ErrorPostNotFound);
     }
   }
-  //@UseGuards(JwtAuthGuard, RolesGuard)
-  //@Roles([Role.USER])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.USER])
   @ApiOperation({ summary: 'Upload image in the user post' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -212,8 +212,8 @@ export class UserPostsController {
     }
   }
 
-  //@UseGuards(JwtAuthGuard, RolesGuard)
-  //@Roles([Role.USER])
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles([Role.USER])
   @ApiOperation({ summary: 'Remove the image from the user post' })
   @ApiResponse({
     status: 200,

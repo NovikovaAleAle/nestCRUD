@@ -2,8 +2,8 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { parseStringEnv } from '../../helpers/parse.env.helper';
-import { Credential } from '../../credentials/credential.entity';
 import { Env } from '../../config/constants';
+import { RoleCredentialDto } from '../../dto/role.credential.dto';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -15,12 +15,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: parseStringEnv(Env.JWT_SECRET_KEY),
     });
   }
-  validate(payload: Partial<Credential>) {
-    const credential: Partial<Credential> = {
+  validate(payload: RoleCredentialDto) {
+    const roleCredential: RoleCredentialDto = {
       id: payload.id,
       username: payload.username,
+      role: payload.role,
     };
     this.logger.log(`Credential ${payload.username} confirmed`);
-    return credential;
+    return roleCredential;
   }
 }

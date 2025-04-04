@@ -9,12 +9,12 @@ import { Credential } from '../credentials/credential.entity';
 import { Role } from '../config/constants';
 import { parseIntEnv, parseStringEnv } from '../helpers/parse.env.helper';
 import { Env } from '../config/constants';
-import { MailService } from '../mail/mail.service';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), KafkaModule],
+  imports: [TypeOrmModule.forFeature([User]), KafkaModule, MailModule],
   controllers: [UsersController],
-  providers: [UsersService, MailService],
+  providers: [UsersService],
   exports: [UsersService],
 })
 export class UsersModule implements OnModuleInit {

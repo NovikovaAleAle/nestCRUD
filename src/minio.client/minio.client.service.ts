@@ -10,7 +10,7 @@ import { parseStringEnv } from '../helpers/parse.env.helper';
 import { Env } from '../config/constants';
 import { BufferedFileDto } from '../dto/input.dto/buffered.file.dto';
 import * as crypto from 'crypto';
-import { UrlDto } from '../dto/url.dto';
+import { UrlDto } from '../dto/interfaces';
 import minioConfig from '../config/minio.config';
 import { ConfigType } from '@nestjs/config';
 
@@ -53,7 +53,7 @@ export class MinioClientService {
       file.originalname.length,
     );
     const filename = hashedFileName + ext;
-    const fileName: string = `${filename}`;
+    const fileName = `${filename}`;
     const fileBuffer = file.buffer;
     try {
       await this.client.putObject(bucket, fileName, fileBuffer);

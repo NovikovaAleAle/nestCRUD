@@ -6,11 +6,12 @@ import { AppBasicStrategy } from './guards/basic.strategy';
 import { JwtStrategy } from './guards/jwt.strategy';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
-import { MailService } from 'src/mail/mail.service';
+import { MailModule } from 'src/mail/mail.module';
+import { TokenUuidModule } from 'src/token.uuid/token.uuid.module';
 
 @Module({
-  imports: [PassportModule, UsersModule, CredentialModule],
-  providers: [AuthService, AppBasicStrategy, JwtStrategy, MailService],
+  imports: [PassportModule, UsersModule, CredentialModule, MailModule, TokenUuidModule],
+  providers: [AuthService, AppBasicStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}

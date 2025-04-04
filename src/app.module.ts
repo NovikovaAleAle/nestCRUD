@@ -15,7 +15,9 @@ import { AdminModule } from './admin/admin.module';
 import { UserPostsModule } from './user.posts/user.posts.module';
 import mailerConfig from './config/mailer.config';
 import minioConfig from './config/minio.config';
-import { MinioClientModule } from './minio-client/minio.client.module';
+import { MinioClientModule } from './minio.client/minio.client.module';
+import { TokenUuidModule } from './token.uuid/token.uuid.module';
+
 
 @Module({
   imports: [
@@ -49,6 +51,7 @@ import { MinioClientModule } from './minio-client/minio.client.module';
     AdminModule,
     UserPostsModule,
     MinioClientModule,
+    TokenUuidModule,
   ],
 })
 export class AppModule {

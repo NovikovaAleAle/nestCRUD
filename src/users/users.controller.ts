@@ -33,7 +33,7 @@ export class UsersController {
   async create(@Body() createUserDto: CreateUserDto): Promise<string> {
     try {
       const userId: number = await this.usersService.create(createUserDto);
-      await this.mailService.sendUserConfirmation(createUserDto.credential);
+      await this.mailService.sendUserConfirmation(userId, createUserDto.credential);
       this.logger.log(`Confirmation email sent user id:${userId}`);
       return 'Complete registration with email confirmation';
     } catch (error) {

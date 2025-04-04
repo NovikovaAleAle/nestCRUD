@@ -6,10 +6,7 @@ import { UserPost } from './user.post.entity';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
 import { KafkaModule } from '../kafka/kafka.module';
-import { MinioClientModule } from 'src/minio-client/minio.client.module';
-//import { MinioClientModule } from 'src/minio-client/minio.client.module';
-//import { KafkaService } from 'src/kafka/kafka.service';
-//import { UsersModule } from 'src/users/users.module';
+import { MinioClientModule } from 'src/minio.client/minio.client.module';
 
 @Module({
   imports: [

@@ -2,9 +2,11 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import mailerConfig from '../config/mailer.config';
+import { TokenUuidModule } from 'src/token.uuid/token.uuid.module';
+import { TokenUuidService } from 'src/token.uuid/token.uuid.service';
 
 @Module({
-  imports: [MailerModule.forRootAsync(mailerConfig.asProvider())],
+  imports: [MailerModule.forRootAsync(mailerConfig.asProvider()), TokenUuidModule],
   providers: [MailService],
   exports: [MailService],
 })

@@ -1,9 +1,9 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { Injectable, Logger } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { parseStringEnv } from '../../helpers/parse.env.helper';
-import { Env } from '../../config/constants';
-import { RoleCredentialDto } from '../../dto/role.credential.dto';
+import { parseStringEnv } from 'src/helpers/parse.env.helper';
+import { Env } from 'src/config/constants';
+import { RoleCredentialDto } from 'src/dto/interfaces';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

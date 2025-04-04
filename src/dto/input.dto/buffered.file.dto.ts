@@ -9,4 +9,4 @@ export interface BufferedFileDto extends Express.Multer.File {
   buffer: Buffer;
 }
 
-export type AppMimeType = 'image/png' | 'image/jpeg' | 'image/jpg';
+type AppMimeType = 'image/png' | 'image/jpeg' | 'image/jpg';

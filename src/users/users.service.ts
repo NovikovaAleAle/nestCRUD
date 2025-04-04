@@ -13,7 +13,7 @@ import { KafkaService } from '../kafka/kafka.service';
 import { Credential } from '../credentials/credential.entity';
 import { CreateUserDto } from '../dto/input.dto/create.user.dto';
 import { Role } from '../config/constants';
-import { UserRoleDto } from 'src/dto/user.role.dto';
+import { UserRoleDto } from '../dto/interfaces';
 
 @Injectable()
 export class UsersService {
@@ -127,7 +127,7 @@ export class UsersService {
 
   async findUserRolebyIdCredential(credentialId: number): Promise<UserRoleDto> {
     const queryBuilder = this.usersRepository.createQueryBuilder('user');
-    const user = await queryBuilder
+    const user: User | null = await queryBuilder
       .innerJoinAndSelect('user.credential', 'credential')
       .where('credential.id = :credentialId', { credentialId })
       .getOne();
@@ -147,5 +147,15 @@ export class UsersService {
     }
     this.logger.log(`User with id:${id} found`);
     return user;
+  }
+
+  async findUserRolebyId(id: number): Promise<UserRoleDto> {
+    const user: User | null = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      this.logger.warn(`User for credential id:${id} not found`);
+      throw new ErrorUserNotFound();
+    }
+    this.logger.log(`User role for credential id:${id} found`);
+    return { id: user.id, role: user.role };
   }
 }

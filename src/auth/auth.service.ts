@@ -2,7 +2,6 @@ import {
   ConflictException,
   Injectable,
   Logger,
-  BadRequestException,
 } from '@nestjs/common';
 import { CredentialService } from '../credentials/credential.service';
 import { Credential } from '../credentials/credential.entity';
@@ -10,11 +9,14 @@ import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from '../dto/output.dto/token.dto';
 import { isMatch } from '../helpers/bcrypt.pass.helper';
 import { MailService } from '../mail/mail.service';
-import { InputTokenDto } from '../dto/input.dto/input.token.dto';
+import { InputUuidDto } from 'src/dto/input.dto/input.uuid.dto';
 import { Role } from '../config/constants';
 import { UsersService } from '../users/users.service';
-import { UserRoleDto } from '../dto/user.role.dto';
+import { UserRoleDto } from '../dto/interfaces';
 import { ErrorCredentialNotFound } from 'src/error/error.credential-not-found';
+import { TokenUuidService } from 'src/token.uuid/token.uuid.service';
+import { parseIntEnv } from 'src/helpers/parse.env.helper';
+import { Env } from '../config/constants';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +26,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
+    private readonly tokenUuidService: TokenUuidService,
   ) {}
 
   async validateCredential(
@@ -57,25 +60,21 @@ export class AuthService {
     };
   }
 
-  async confirm(inputToken: InputTokenDto): Promise<void> {
-    const payloadCredential: Partial<Credential> =
-      await this.jwtService.verifyAsync(inputToken.token);
-    const id = payloadCredential.id;
-    if (!id || !payloadCredential.username) {
-      throw new BadRequestException(`Invalid token`);
-    }
+  async confirm(inputUuid: InputUuidDto): Promise<void> {
+    const currentTimeMinusLifeTimeUuid = new Date().getTime() - parseIntEnv(Env.UUID_LIFE_TIME);
+    const tokenUuid = await this.tokenUuidService.validate(
+      inputUuid.uuid,
+      currentTimeMinusLifeTimeUuid,
+    );
     try {
-      const credential = await this.credentialService.findOneId(id);
-      if (credential.id && credential.username === payloadCredential.username) {
-        const user: UserRoleDto =
-          await this.usersService.findUserRolebyIdCredential(credential.id);
-        if (user.role !== Role.USER) {
-          await this.usersService.setRole(user.id, Role.USER);
-          this.logger.log(`Email user id: ${user.id} comfirmed`);
-        } else {
-          this.logger.warn(`User id:${user.id}, role already exist`);
-          throw new ConflictException(`This email was already comfirmed`);
-        }
+      const user:UserRoleDto = await this.usersService.findUserRolebyId(tokenUuid.userId); 
+      if (user.role !== Role.USER) {
+        await this.usersService.setRole(user.id, Role.USER);
+        await this.tokenUuidService.activationTokenUuid(tokenUuid.uuid);
+        this.logger.log(`Email user id: ${user.id} comfirmed`);
+      } else {
+        this.logger.warn(`User id:${user.id}, role already exist`);
+        throw new ConflictException(`This email was already comfirmed`);
       }
     } catch (error) {
       if (!(error instanceof ConflictException)) {
@@ -93,7 +92,7 @@ export class AuthService {
         this.logger.warn(`User id:${user.id}, role already exist`);
         throw new ConflictException(`This email was already comfirmed`);
       }
-      await this.mailService.sendUserConfirmation(credential);
+      await this.mailService.sendUserConfirmation(user.id, credential);
       this.logger.log(`Confirmation id:${credential.id} email sent`);
     }
   }

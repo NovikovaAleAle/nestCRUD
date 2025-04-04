@@ -82,7 +82,7 @@ services:
       - kafka
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                cub kafka-ready -b kafka:9093 1 30 && \
-               kafka-topics --create --topic ${KAFFKA_TOPIC} --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:9093'"
+               kafka-topics --create --topic ${KAFKA_TOPIC} --partitions 1 --replication-factor 1 --if-not-exists --bootstrap-server kafka:9093'"
 
   minio:
     container_name: minio

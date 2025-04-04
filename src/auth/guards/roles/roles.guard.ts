@@ -6,9 +6,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLE_KEY } from '../../../config/constants';
+import { ROLE_KEY } from 'src/config/constants';
 import { Request } from 'express';
-import { RoleCredentialDto } from '../../../dto/role.credential.dto';
+import { RoleCredentialDto } from 'src/dto/interfaces';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

@@ -14,7 +14,6 @@ export default registerAs('mailer', () => ({
       pass: parseStringEnv(Env.MAILER_PASSWORD),
     },
     tls: {
-      // do not fail on invalid certs
       rejectUnauthorized: false,
     },
   },

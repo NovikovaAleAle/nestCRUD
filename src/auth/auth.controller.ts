@@ -58,7 +58,11 @@ export class AuthController {
     } catch (error) {
       this.logger.error(error);
       throw errorsHandler(
-        error as Error | ErrorCredentialNotFound | BadRequestException | ConflictException,
+        error as
+          | Error
+          | ErrorCredentialNotFound
+          | BadRequestException
+          | ConflictException,
       );
     }
   }

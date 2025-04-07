@@ -11,17 +11,13 @@ export class MailService {
   private readonly logger = new Logger(MailService.name);
   constructor(
     private readonly mailerService: MailerService,
-    //private readonly jwtService: JwtService,
     private readonly tokenUuidService: TokenUuidService,
   ) {}
 
-  async sendUserConfirmation(userId:number, credential: Partial<Credential>): Promise<void> {
-    /*const payload = {
-      username: credential.username,
-      id: credential.id,
-      email: credential.email,
-    };
-    */
+  async sendUserConfirmation(
+    userId: number,
+    credential: Partial<Credential>,
+  ): Promise<void> {
     const token = await this.tokenUuidService.create(userId);
     const url = `http://127.0.0.1:3000/auth/confirm?token=${token.uuid}`;
     try {

@@ -7,25 +7,22 @@ export interface RoleCredentialDto {
 }
 
 export interface UrlDto {
-    url: string;
+  url: string;
 }
 
 export interface UserRoleDto {
-    id: number;
-    role: Role;
+  id: number;
+  role: Role;
 }
 
 export interface CustomSentMessageInfo {
-    accepted: string[];
-    rejected: string[];
-    ehlo: string[];
-    envelopeTime: number;
-    messageTime: number;
-    messageSize: number;
-    response: string;
-    envelope: object;
-    messageId: string;
+  accepted: string[];
+  rejected: string[];
+  ehlo: string[];
+  envelopeTime: number;
+  messageTime: number;
+  messageSize: number;
+  response: string;
+  envelope: object;
+  messageId: string;
 }
-
-
-

@@ -1,23 +1,23 @@
-import { 
+import {
   Column,
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-} from "typeorm";
+} from 'typeorm';
 
 @Entity()
 export class TokenUuid {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
   @Column()
   userId: number;
 
   @Column({ default: false })
-  activation: boolean
+  activation: boolean;
 
   @CreateDateColumn({
-    type: "timestamp with time zone",
+    type: 'timestamp with time zone',
     nullable: false,
   })
   createdAt: Date;

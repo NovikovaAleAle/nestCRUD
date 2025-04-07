@@ -15,10 +15,10 @@ export class TokenUuidService {
     uuid: string,
     currentTimeMinusLifeTimeUuid: number,
   ): Promise<TokenUuid> {
-    const token: TokenUuid | null = await this.tokenUuidRepository.findOneBy({ 
+    const token: TokenUuid | null = await this.tokenUuidRepository.findOneBy({
       uuid,
     });
-    if (token && (token.createdAt.getTime() >= currentTimeMinusLifeTimeUuid)) {
+    if (token && token.createdAt.getTime() >= currentTimeMinusLifeTimeUuid) {
       this.logger.log(`Token-uuid: ${uuid} valid`);
       return token;
     }
@@ -30,7 +30,7 @@ export class TokenUuidService {
     const token = new TokenUuid();
     token.userId = userId;
     const tokenUuid: TokenUuid = await this.tokenUuidRepository.save(token);
-    this.logger.log(`Token UUID: ${token} created`);
+    this.logger.log(`Token UUID: ${tokenUuid.uuid} created`);
     return tokenUuid;
   }
 

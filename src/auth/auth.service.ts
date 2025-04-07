@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { CredentialService } from '../credentials/credential.service';
 import { Credential } from '../credentials/credential.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -61,13 +57,16 @@ export class AuthService {
   }
 
   async confirm(inputUuid: InputUuidDto): Promise<void> {
-    const currentTimeMinusLifeTimeUuid = new Date().getTime() - parseIntEnv(Env.UUID_LIFE_TIME);
+    const currentTimeMinusLifeTimeUuid =
+      new Date().getTime() - parseIntEnv(Env.UUID_LIFE_TIME);
     const tokenUuid = await this.tokenUuidService.validate(
       inputUuid.uuid,
       currentTimeMinusLifeTimeUuid,
     );
     try {
-      const user:UserRoleDto = await this.usersService.findUserRolebyId(tokenUuid.userId); 
+      const user: UserRoleDto = await this.usersService.findUserRolebyId(
+        tokenUuid.userId,
+      );
       if (user.role !== Role.USER) {
         await this.usersService.setRole(user.id, Role.USER);
         await this.tokenUuidService.activationTokenUuid(tokenUuid.uuid);

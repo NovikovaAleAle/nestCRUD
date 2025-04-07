@@ -10,7 +10,13 @@ import { MailModule } from 'src/mail/mail.module';
 import { TokenUuidModule } from 'src/token.uuid/token.uuid.module';
 
 @Module({
-  imports: [PassportModule, UsersModule, CredentialModule, MailModule, TokenUuidModule],
+  imports: [
+    PassportModule,
+    UsersModule,
+    CredentialModule,
+    MailModule,
+    TokenUuidModule,
+  ],
   providers: [AuthService, AppBasicStrategy, JwtStrategy],
   controllers: [AuthController],
 })

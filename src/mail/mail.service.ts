@@ -19,7 +19,7 @@ export class MailService {
     credential: Partial<Credential>,
   ): Promise<void> {
     const token = await this.tokenUuidService.create(userId);
-    const url = `http://127.0.0.1:3000/auth/confirm?token=${token.uuid}`;
+    const url = `http://127.0.0.1:3000/auth/confirm?uuid=${token.uuid}`;
     try {
       const sendmailinfo = (await this.mailerService.sendMail({
         to: credential.email,

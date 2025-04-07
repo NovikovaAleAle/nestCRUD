@@ -8,14 +8,18 @@ export default registerAs('mailer', () => ({
   transport: {
     host: parseStringEnv(Env.MAILER_HOST),
     port: parseIntEnv(Env.MAILER_PORT),
-    secure: false,
+    secure: true,
     auth: {
       user: parseStringEnv(Env.MAILER_USER),
       pass: parseStringEnv(Env.MAILER_PASSWORD),
     },
+    tls: {
+      // do not fail on invalid certs
+      rejectUnauthorized: false,
+    },
   },
   defaults: {
-    from: '"nest-app" <app@gmail.com>',
+    from: '"nest-app" <n_alena_a@mail.ru>',
   },
   template: {
     dir: join(__dirname, '../', 'mail/', '/templates'),

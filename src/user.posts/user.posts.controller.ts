@@ -17,7 +17,6 @@ import {
   FileTypeValidator,
   HttpException,
   ConflictException,
-  Req,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -42,7 +41,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
 import { RolesGuard } from '../auth/guards/roles/roles.guard';
 import { Roles } from '../auth/guards/roles/roles.decorator';
 import { Role } from '../config/constants';
-import { Request } from 'express';
 
 @ApiTags('User Posts')
 @ApiBearerAuth()
@@ -86,9 +84,7 @@ export class UserPostsController {
   async deletePostById(
     @Param('id', ParseIntPipe) userId: number,
     @Param('idpost', ParseIntPipe) postId: number,
-    @Req() req: Request,
   ): Promise<string> {
-    console.log('ewde', req.user);
     try {
       await this.userPostsService.deletePostById(userId, postId);
       return 'Post deleted';

@@ -1,5 +1,5 @@
 import { registerAs } from '@nestjs/config';
-import { parseStringEnv, parseIntEnv } from 'src/helpers/parse.env.helper';
+import { parseStringEnv, parseIntEnv } from '../helpers/parse.env.helper';
 import { Env } from './constants';
 
 export default registerAs('minio', () => ({

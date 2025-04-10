@@ -18,7 +18,6 @@ import minioConfig from './config/minio.config';
 import { MinioClientModule } from './minio.client/minio.client.module';
 import { TokenUuidModule } from './token.uuid/token.uuid.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({

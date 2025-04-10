@@ -14,7 +14,7 @@ import { BasicAuthGuard } from './guards/basic.auth.guard';
 import { ApiOperation, ApiResponse, ApiBasicAuth } from '@nestjs/swagger';
 import { Request } from 'express';
 import { TokenDto } from '../dto/output.dto/token.dto';
-import { InputUuidDto } from 'src/dto/input.dto/input.uuid.dto';
+import { InputUuidDto } from '../dto/input.dto/input.uuid.dto';
 import { errorsHandler } from '../error/errors.handler';
 import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
 import { ErrorEmailNotSent } from '../error/error.email-not-sent';

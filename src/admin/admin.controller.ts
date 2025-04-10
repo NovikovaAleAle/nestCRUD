@@ -29,7 +29,6 @@ import { UpdateUserDto } from '../dto/input.dto/update.user.dto';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
 import { PageUsersDto } from '../dto/output.dto/page.users.dto';
 import { OutputUserDto } from '../dto/output.dto/output.user.dto';
-import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.auth.guard';
 import { RolesGuard } from '../auth/guards/roles/roles.guard';
 
@@ -39,17 +38,14 @@ import { RolesGuard } from '../auth/guards/roles/roles.guard';
 export class AdminController {
   private readonly logger = new Logger(AdminController.name);
 
-  constructor(
-    private readonly adminService: AdminService,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly adminService: AdminService) {}
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([Role.ADMIN])
   @ApiOperation({ summary: 'Create user with role USER' })
   @ApiBody({ type: CreateUserDto })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'User creation message',
     type: String,
   })
@@ -60,7 +56,7 @@ export class AdminController {
       return 'User created';
     } catch (error) {
       this.logger.error(`createUser, ${error}`);
-      throw errorsHandler(error as Error);
+      throw errorsHandler(error as Error | ConflictException);
     }
   }
 
@@ -120,7 +116,7 @@ export class AdminController {
   ): Promise<PageUsersDto<OutputUserDto>> {
     try {
       const pageUsers: PageUsersDto<OutputUserDto> =
-        await this.usersService.findAllWithPagination(pageOptionsDto);
+        await this.adminService.findAllUsersWithPagination(pageOptionsDto);
       return pageUsers;
     } catch (error) {
       this.logger.error(`findAllUsersWithPagination, ${error}`);

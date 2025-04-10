@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Credential } from '../credentials/credential.entity';
-//import { JwtService } from '@nestjs/jwt';
 import { CustomSentMessageInfo } from '../dto/interfaces';
 import { ErrorEmailNotSent } from '../error/error.email-not-sent';
 import { TokenUuidService } from '../token.uuid/token.uuid.service';

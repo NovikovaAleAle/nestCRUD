@@ -5,13 +5,13 @@ import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from '../dto/output.dto/token.dto';
 import { isMatch } from '../helpers/bcrypt.pass.helper';
 import { MailService } from '../mail/mail.service';
-import { InputUuidDto } from 'src/dto/input.dto/input.uuid.dto';
+import { InputUuidDto } from '../dto/input.dto/input.uuid.dto';
 import { Role } from '../config/constants';
 import { UsersService } from '../users/users.service';
 import { UserRoleDto } from '../dto/interfaces';
-import { ErrorCredentialNotFound } from 'src/error/error.credential-not-found';
-import { TokenUuidService } from 'src/token.uuid/token.uuid.service';
-import { parseIntEnv } from 'src/helpers/parse.env.helper';
+import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
+import { TokenUuidService } from '../token.uuid/token.uuid.service';
+import { parseIntEnv } from '../helpers/parse.env.helper';
 import { Env } from '../config/constants';
 
 @Injectable()

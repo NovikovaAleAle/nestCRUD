@@ -3,8 +3,8 @@ import { MinioModule, MinioService } from 'nestjs-minio-client';
 import { MinioClientService } from './minio.client.service';
 import minioConfig from '../config/minio.config';
 import { ConfigModule, ConfigType } from '@nestjs/config';
-import { parseStringEnv } from 'src/helpers/parse.env.helper';
-import { Env } from 'src/config/constants';
+import { parseStringEnv } from '../helpers/parse.env.helper';
+import { Env } from '../config/constants';
 
 @Module({
   imports: [

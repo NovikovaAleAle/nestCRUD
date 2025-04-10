@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { ConsoleLogger } from '@nestjs/common';
 import { SwaggerModule } from '@nestjs/swagger';
@@ -9,7 +9,7 @@ import { Env } from './config/constants';
 
 async function bootstrap() {
   try {
-    const app = await NestFactory.create(AppModule, {
+    const app: INestApplication = await NestFactory.create(AppModule, {
       logger: new ConsoleLogger({
         prefix: 'nestCRUD',
         logLevels: ['log', 'warn', 'error'],
@@ -17,7 +17,11 @@ async function bootstrap() {
       }),
     });
     app.useGlobalPipes(
-      new ValidationPipe({ transform: true }), //whitelist: true
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+      }),
     );
 
     const documentFactory = () =>

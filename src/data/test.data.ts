@@ -54,3 +54,49 @@ export const users = [
     role: Role.GUEST,
   },
 ];
+
+export const credential = {
+  id: 1,
+  username: 'Ivanushka',
+  password: '123',
+  email: 'ivan@example.ru',
+};
+
+export const updateUserDtoTest = {
+  user: { name: 'Peter' },
+  credential: { username: 'Petrovich' },
+};
+
+export const inputUserPostDtoTest = {
+  title: 'Test post for test',
+  content: 'test text for tset, test text for test, test text for test',    
+}
+
+export const updateUserPostDtoTest = {
+  content: 'update content, update content, update content',
+}
+
+export const userPost = {
+  id: 1,
+  title: 'Test post for test',
+  content: 'test text for test, test text for test, test text for test',
+  image: null,
+  user: user,
+}
+
+export const userPosts = [
+  {
+    id: 1,
+    title: 'Test post for test',
+    content: 'test text for test, test text for test, test text for test',
+    image: null,
+    user: user,
+  },
+  {
+    id: 2,
+    title: 'Test post for test two',
+    content: 'test text for test two two two two',
+    image: null,
+    user: user,
+  },
+];

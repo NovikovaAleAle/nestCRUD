@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { CredentialService } from './credential.service';
+import { CredentialsService } from './credentials.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Credential } from './credential.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Credential])],
-  providers: [CredentialService],
-  exports: [CredentialService],
+  providers: [CredentialsService],
+  exports: [CredentialsService],
 })
-export class CredentialModule {}
+export class CredentialsModule {}

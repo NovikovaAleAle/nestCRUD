@@ -1,5 +1,5 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
-import { CredentialService } from '../credentials/credential.service';
+import { CredentialsService } from '../credentials/credentials.service';
 import { Credential } from '../credentials/credential.entity';
 import { JwtService } from '@nestjs/jwt';
 import { TokenDto } from '../dto/output.dto/token.dto';
@@ -18,7 +18,7 @@ import { Env } from '../config/constants';
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
   constructor(
-    private readonly credentialService: CredentialService,
+    private readonly credentialsService: CredentialsService,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
@@ -29,7 +29,7 @@ export class AuthService {
     username: string,
     pass: string,
   ): Promise<Partial<Credential> | null> {
-    const credential = await this.credentialService.findOneUsername(username);
+    const credential = await this.credentialsService.findOneUsername(username);
     if (credential && (await isMatch(pass, credential.password))) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = credential;

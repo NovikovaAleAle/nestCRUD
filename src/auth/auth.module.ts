@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CredentialModule } from '../credentials/credential.module';
+import { CredentialsModule } from '../credentials/credentials.module';
 import { PassportModule } from '@nestjs/passport';
 import { AppBasicStrategy } from './guards/basic.strategy';
 import { JwtStrategy } from './guards/jwt.strategy';
@@ -13,7 +13,7 @@ import { TokenUuidModule } from '../token.uuid/token.uuid.module';
   imports: [
     PassportModule,
     UsersModule,
-    CredentialModule,
+    CredentialsModule,
     MailModule,
     TokenUuidModule,
   ],

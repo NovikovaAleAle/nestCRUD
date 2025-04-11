@@ -5,19 +5,20 @@
 */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConflictException } from '@nestjs/common';
-import { UsersService } from '../../users/users.service';
+import { UsersService } from './users.service';
 import { Repository } from 'typeorm';
-import { User } from '../../users/user.entity';
-import { KafkaService } from '../../kafka/kafka.service';
+import { User } from './user.entity';
+import { KafkaService } from '../kafka/kafka.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import {
   createUserDtoTest,
   user,
   users,
+  updateUserDtoTest,
   pageOptionsDtoTest,
-} from '../test.data';
-import { Role } from '../../config/constants';
-import { ErrorUserNotFound } from '../../error/error.user-not-found';
+} from '../data/test.data';
+import { Role } from '../config/constants';
+import { ErrorUserNotFound } from '../error/error.user-not-found';
 
 describe('UsersService', () => {
   let usersService: UsersService;
@@ -63,6 +64,10 @@ describe('UsersService', () => {
     usersRepository = moduleRef.get<Repository<User>>(getRepositoryToken(User));
     kafkaService = moduleRef.get<KafkaService>(KafkaService);
   });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  })
 
   describe('create', () => {
     it('should create a user and send kafka message', async () => {
@@ -159,18 +164,13 @@ describe('UsersService', () => {
 
   describe('updateId', () => {
     it('should update user and credential', async () => {
-      const updateDto = {
-        user: { name: 'Peter' },
-        credential: { username: 'Petrovich' },
-      };
-
       mockUsersRepository.findOneBy.mockResolvedValue(user);
       mockUsersRepository.save.mockResolvedValue({
         ...user,
-        ...updateDto.user,
+        ...updateUserDtoTest.user,
       });
 
-      await usersService.updateId(2, updateDto);
+      await usersService.updateId(2, updateUserDtoTest);
 
       expect(user.name).toBe('Peter');
       expect(user.credential.username).toBe('Petrovich');
@@ -180,11 +180,10 @@ describe('UsersService', () => {
   describe('findUserRolebyIdCredential', () => {
     it('should return user role by credential id', async () => {
       const queryBuilder = mockUsersRepository.createQueryBuilder();
-      queryBuilder.getOne.mockResolvedValue(user);
-      console.log('dcsdc', user);
-      const result = await usersService.findUserRolebyIdCredential(2);
+      queryBuilder.getOne.mockResolvedValue(users[0]);
+      const result = await usersService.findUserRolebyIdCredential(1);
 
-      expect(result).toEqual({ id: 2, role: Role.USER });
+      expect(result).toEqual({ id: 1, role: Role.ADMIN });
     });
   });
 

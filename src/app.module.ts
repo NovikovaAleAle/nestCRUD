@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigType } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
-import { CredentialModule } from './credentials/credential.module';
+import { CredentialsModule } from './credentials/credentials.module';
 import { DataSource } from 'typeorm';
 import { KafkaModule } from './kafka/kafka.module';
 import { AuthModule } from './auth/auth.module';
@@ -44,7 +44,7 @@ import { TokenUuidModule } from './token.uuid/token.uuid.module';
     }),
     KafkaModule,
     UsersModule,
-    CredentialModule,
+    CredentialsModule,
     AuthModule,
     MailModule,
     AdminModule,

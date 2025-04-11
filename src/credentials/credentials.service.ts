@@ -2,12 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Credential } from './credential.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
 import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
 
 @Injectable()
-export class CredentialService {
-  private readonly logger = new Logger(CredentialService.name);
+export class CredentialsService {
+  private readonly logger = new Logger(CredentialsService.name);
   constructor(
     @InjectRepository(Credential)
     private credentialsRepository: Repository<Credential>,

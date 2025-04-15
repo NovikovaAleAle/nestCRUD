@@ -1,6 +1,7 @@
 import { plainToClass } from 'class-transformer';
 import { Role } from '../config/constants';
 import { PageOptionsDto } from '../dto/input.dto/page.options.dto';
+import { BufferedFileDto } from '../dto/input.dto/buffered.file.dto';
 
 export const createUserDtoTest = {
   user: {
@@ -69,12 +70,12 @@ export const updateUserDtoTest = {
 
 export const inputUserPostDtoTest = {
   title: 'Test post for test',
-  content: 'test text for tset, test text for test, test text for test',    
-}
+  content: 'test text for tset, test text for test, test text for test',
+};
 
 export const updateUserPostDtoTest = {
   content: 'update content, update content, update content',
-}
+};
 
 export const userPost = {
   id: 1,
@@ -82,7 +83,7 @@ export const userPost = {
   content: 'test text for test, test text for test, test text for test',
   image: null,
   user: user,
-}
+};
 
 export const userPosts = [
   {
@@ -100,3 +101,34 @@ export const userPosts = [
     user: user,
   },
 ];
+
+export const uuidToken = {
+  uuid: 'c99a0227-79e3-4d27-ae27-2db79ee799fc',
+  userId: 1,
+  activation: false,
+  createdAt: new Date('2025-04-14 09:47:45.219642+00'),
+};
+
+export const mockCurrentTimeMinusLifeTimeUuid = new Date(
+  '2025-04-14 8:43:23.219642+00',
+).getTime();
+
+export const mockRecivedUuid = 'c99a0227-79e3-4d27-ae27-2db79ee799fc';
+
+export const validFile = {
+  fieldname: 'file',
+  originalname: 'test-image.jpg',
+  encoding: 'binary',
+  mimetype: 'image/jpeg',
+  size: 1024,
+  buffer: Buffer.from('test-data'),
+} as BufferedFileDto;
+
+export const invalidFile = {
+  fieldname: 'file',
+  originalname: 'test-image.jpg',
+  encoding: 'binary',
+  mimetype: 'text/plain',
+  size: 1024,
+  buffer: Buffer.from('test-data'),
+};

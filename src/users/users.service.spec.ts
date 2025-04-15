@@ -20,7 +20,7 @@ import {
 import { Role } from '../config/constants';
 import { ErrorUserNotFound } from '../error/error.user-not-found';
 
-describe('UsersService', () => {
+describe('UsersService (unit)', () => {
   let usersService: UsersService;
   let usersRepository: Repository<User>;
   let kafkaService: KafkaService;
@@ -67,7 +67,7 @@ describe('UsersService', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
-  })
+  });
 
   describe('create', () => {
     it('should create a user and send kafka message', async () => {

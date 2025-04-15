@@ -21,11 +21,11 @@ import { UserPost } from './user.post.entity';
 import { ErrorPostNotFound } from '../error/error.post-not-found';
 import { OutputPostDto } from '../dto/output.dto/output.post.dto';
 
-describe('UserPostsService', () => {
+describe('UserPostsService (unit)', () => {
   let userPostsService: UserPostsService;
   let userPostsRepository: Repository<UserPost>;
   let usersService: UsersService;
-  let minioClientService: MinioClientService;
+  //let minioClientService: MinioClientService;
 
   const mockUserPostsRepository = {
     create: jest.fn(),
@@ -54,31 +54,33 @@ describe('UserPostsService', () => {
     remove: jest.fn(),
   };
 
-  beforeEach( async () => {
+  beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
-      providers:[
-      {
-        provide: getRepositoryToken(UserPost),
-        useValue: mockUserPostsRepository,
-      },
-      {
-        provide: UsersService,
-        useValue: mockUsersService,
-      },
-      {
-        provide: MinioClientService,
-        useValue: mockMinioClientService,
-      },
-      UserPostsService,
-    ],
+      providers: [
+        {
+          provide: getRepositoryToken(UserPost),
+          useValue: mockUserPostsRepository,
+        },
+        {
+          provide: UsersService,
+          useValue: mockUsersService,
+        },
+        {
+          provide: MinioClientService,
+          useValue: mockMinioClientService,
+        },
+        UserPostsService,
+      ],
     }).compile();
 
     userPostsService = moduleRef.get<UserPostsService>(UserPostsService);
-    userPostsRepository = moduleRef.get<Repository<UserPost>>(getRepositoryToken(UserPost));
+    userPostsRepository = moduleRef.get<Repository<UserPost>>(
+      getRepositoryToken(UserPost),
+    );
     usersService = moduleRef.get<UsersService>(UsersService);
-    minioClientService = moduleRef.get<MinioClientService>(MinioClientService);
+    //minioClientService = moduleRef.get<MinioClientService>(MinioClientService);
   });
-  
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -86,10 +88,10 @@ describe('UserPostsService', () => {
   describe('createPost', () => {
     it('should create user post ', async () => {
       mockUsersService.findIdForPost.mockResolvedValue(user);
-      const savedUserPost = { ...inputUserPostDtoTest, user: user }
+      const savedUserPost = { ...inputUserPostDtoTest, user: user };
       mockUserPostsRepository.save.mockResolvedValue(savedUserPost);
 
-      await userPostsService.createPost(user.id, inputUserPostDtoTest );
+      await userPostsService.createPost(user.id, inputUserPostDtoTest);
 
       expect(usersService.findIdForPost).toHaveBeenCalledWith(2);
       expect(userPostsRepository.save).toHaveBeenCalledWith(savedUserPost);
@@ -101,55 +103,63 @@ describe('UserPostsService', () => {
       mockUserPostsRepository.findOne.mockResolvedValue(userPost);
       mockUserPostsRepository.delete.mockResolvedValue({ affected: 1 });
 
-      await userPostsService.deletePostById(1,1);
-      
+      await userPostsService.deletePostById(1, 1);
+
       expect(userPostsRepository.delete).toHaveBeenCalledWith(1);
     });
 
     it('should throw ErrorNotFoundPost if post not found', async () => {
       mockUserPostsRepository.findOne.mockResolvedValue(null);
-          
-      await expect(userPostsService.deletePostById(2,5)).rejects.toThrow(ErrorPostNotFound);
+
+      await expect(userPostsService.deletePostById(2, 5)).rejects.toThrow(
+        ErrorPostNotFound,
+      );
     });
   });
 
-  describe('updatePostById',() => {
+  describe('updatePostById', () => {
     it('should update post user', async () => {
       mockUserPostsRepository.findOne.mockResolvedValue(userPost);
       mockUserPostsRepository.save.mockResolvedValue({
         ...userPost,
         ...updateUserPostDtoTest,
       });
-      
-      await userPostsService.updatePostById(1,1,updateUserPostDtoTest);
-      
+
+      await userPostsService.updatePostById(1, 1, updateUserPostDtoTest);
+
       expect(userPost.title).toEqual('Test post for test');
-      expect(userPost.content).toEqual('update content, update content, update content');
+      expect(userPost.content).toEqual(
+        'update content, update content, update content',
+      );
     });
-    
+
     it('should throw ErrorNotFoundPost if post not found', async () => {
       mockUserPostsRepository.findOne.mockResolvedValue(null);
-            
-      await expect(userPostsService.updatePostById(2,5,updateUserPostDtoTest))
-        .rejects.toThrow(ErrorPostNotFound);
+
+      await expect(
+        userPostsService.updatePostById(2, 5, updateUserPostDtoTest),
+      ).rejects.toThrow(ErrorPostNotFound);
     });
   });
-  
-  describe('findAllPostsWithPagination',() => {
+
+  describe('findAllPostsWithPagination', () => {
     it('should return paginated posts', async () => {
       const queryBuilder = mockUserPostsRepository.createQueryBuilder();
-      
+
       queryBuilder.getCount.mockResolvedValue(2);
       queryBuilder.getMany.mockResolvedValue(userPosts);
 
-      const result = await userPostsService.findAllPostsWithPagination(1,pageOptionsDtoTest);
+      const result = await userPostsService.findAllPostsWithPagination(
+        1,
+        pageOptionsDtoTest,
+      );
 
-      expect(result.data.length).toBe(2);
+      expect(result.data).toHaveLength(2);
       expect(result.meta.totalItemCount).toBe(2);
-    });    
+    });
   });
 
-  describe('findPostById',() => {
+  describe('findPostById', () => {
     it('should return post', async () => {
       mockUserPostsRepository.findOneBy.mockResolvedValue(userPost);
 
@@ -162,9 +172,10 @@ describe('UserPostsService', () => {
 
     it('should throw ErrorNotFoundPost if post not found', async () => {
       mockUserPostsRepository.findOneBy.mockResolvedValue(null);
-              
-      await expect(userPostsService.findPostById(2))
-        .rejects.toThrow(ErrorPostNotFound);
+
+      await expect(userPostsService.findPostById(2)).rejects.toThrow(
+        ErrorPostNotFound,
+      );
     });
   });
 });

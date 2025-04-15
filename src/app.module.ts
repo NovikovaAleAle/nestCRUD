@@ -17,13 +17,21 @@ import mailerConfig from './config/mailer.config';
 import minioConfig from './config/minio.config';
 import { MinioClientModule } from './minio.client/minio.client.module';
 import { TokenUuidModule } from './token.uuid/token.uuid.module';
+import uuidConfig from './config/uuid.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env'],
-      load: [databaseConfig, kafkaConfig, jwtConfig, mailerConfig, minioConfig],
+      load: [
+        databaseConfig,
+        kafkaConfig,
+        jwtConfig,
+        mailerConfig,
+        minioConfig,
+        uuidConfig,
+      ],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule.forFeature(databaseConfig)],

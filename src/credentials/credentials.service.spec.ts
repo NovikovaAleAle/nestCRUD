@@ -6,40 +6,44 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { credential } from '../data/test.data';
 import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
 
-describe('CredentialsService', () => {
+describe('CredentialsService (unit)', () => {
   let credentialsService: CredentialsService;
   let credentialsRepository: Repository<Credential>;
 
   const mockRepositoryCredentials = {
-    findOneBy: jest.fn(), 
-  }
+    findOneBy: jest.fn(),
+  };
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
         {
           provide: getRepositoryToken(Credential),
-          useValue: mockRepositoryCredentials, 
+          useValue: mockRepositoryCredentials,
         },
         CredentialsService,
       ],
     }).compile();
 
     credentialsService = moduleRef.get<CredentialsService>(CredentialsService);
-    credentialsRepository =moduleRef.get<Repository<Credential>>(getRepositoryToken(Credential));
+    credentialsRepository = moduleRef.get<Repository<Credential>>(
+      getRepositoryToken(Credential),
+    );
   });
 
   afterEach(() => {
     jest.clearAllMocks();
-  })
+  });
 
   describe('findOneUsername', () => {
     it('should return credential by username', async () => {
       mockRepositoryCredentials.findOneBy.mockResolvedValue(credential);
 
       const result = await credentialsService.findOneUsername('Ivanushka');
-      
-      expect(credentialsRepository.findOneBy).toHaveBeenCalledWith({ username: 'Ivanushka'});
+
+      expect(credentialsRepository.findOneBy).toHaveBeenCalledWith({
+        username: 'Ivanushka',
+      });
       expect(result).toEqual(expect.objectContaining({ id: 1 }));
       expect(result).toEqual(expect.objectContaining({ password: '123' }));
     });
@@ -47,10 +51,10 @@ describe('CredentialsService', () => {
     it('should throw ErrorNotFoundCredential if username not found', async () => {
       mockRepositoryCredentials.findOneBy.mockResolvedValueOnce(null);
 
-      await expect(credentialsService.findOneUsername('invalidUsername')).rejects.toThrow(
-        ErrorCredentialNotFound,
-      );
-    }); 
+      await expect(
+        credentialsService.findOneUsername('invalidUsername'),
+      ).rejects.toThrow(ErrorCredentialNotFound);
+    });
   });
 
   describe('findOneId', () => {
@@ -73,4 +77,3 @@ describe('CredentialsService', () => {
     });
   });
 });
-

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger, Inject } from '@nestjs/common';
 import { CredentialsService } from '../credentials/credentials.service';
 import { Credential } from '../credentials/credential.entity';
 import { JwtService } from '@nestjs/jwt';
@@ -11,8 +11,8 @@ import { UsersService } from '../users/users.service';
 import { UserRoleDto } from '../dto/interfaces';
 import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
 import { TokenUuidService } from '../token.uuid/token.uuid.service';
-import { parseIntEnv } from '../helpers/parse.env.helper';
-import { Env } from '../config/constants';
+import uuidConfig from '../config/uuid.config';
+import { ConfigType } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +23,8 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly mailService: MailService,
     private readonly tokenUuidService: TokenUuidService,
+    @Inject(uuidConfig.KEY)
+    private configUuid: ConfigType<typeof uuidConfig>,
   ) {}
 
   async validateCredential(
@@ -58,7 +60,7 @@ export class AuthService {
 
   async confirm(inputUuid: InputUuidDto): Promise<void> {
     const currentTimeMinusLifeTimeUuid =
-      new Date().getTime() - parseIntEnv(Env.UUID_LIFE_TIME);
+      new Date().getTime() - this.configUuid.uuidLifeTime;
     const tokenUuid = await this.tokenUuidService.validate(
       inputUuid.uuid,
       currentTimeMinusLifeTimeUuid,

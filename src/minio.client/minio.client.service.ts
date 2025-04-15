@@ -6,8 +6,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { MinioService } from 'nestjs-minio-client';
-import { parseStringEnv } from '../helpers/parse.env.helper';
-import { Env } from '../config/constants';
 import { BufferedFileDto } from '../dto/input.dto/buffered.file.dto';
 import * as crypto from 'crypto';
 import { UrlDto } from '../dto/interfaces';
@@ -17,7 +15,7 @@ import { ConfigType } from '@nestjs/config';
 @Injectable()
 export class MinioClientService {
   private readonly logger = new Logger(MinioClientService.name);
-  private readonly bucket = parseStringEnv(Env.MINIO_BUCKET);
+  private bucket: string;
 
   get client() {
     return this.minioService.client;
@@ -27,7 +25,9 @@ export class MinioClientService {
     private readonly minioService: MinioService,
     @Inject(minioConfig.KEY)
     private configMinio: ConfigType<typeof minioConfig>,
-  ) {}
+  ) {
+    this.bucket = configMinio.bucket;
+  }
 
   async upload(
     file: BufferedFileDto,

@@ -9,4 +9,5 @@ export default registerAs('minio', () => ({
   //temporarily, a minio user must be created
   accessKey: parseStringEnv(Env.MINIO_ROOT_USER),
   secretKey: parseStringEnv(Env.MINIO_ROOT_PASSWORD),
+  bucket: parseStringEnv(Env.MINIO_BUCKET),
 }));

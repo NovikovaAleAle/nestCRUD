@@ -7,7 +7,7 @@ export const validUserData = {
   credential: {
     username: 'TestValidUser',
     password: 'Password123!',
-    email: 'test@example.com',
+    email: 'n_alena_a@mail.ru',
   },
 };
 

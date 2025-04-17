@@ -17,3 +17,14 @@ export const parseIntEnv = (nameEnv: string): number => {
   }
   return valueInt;
 };
+
+export const parseBooleanEnv = (nameEnv: string): boolean => {
+  const valueStr: string = envIsExist(nameEnv);
+  if (valueStr === 'true') {
+    return true;
+  }
+  if (valueStr === 'false') {
+    return false;
+  }
+  throw new Error(`Invalid env ${nameEnv}`);
+};

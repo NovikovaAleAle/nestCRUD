@@ -111,18 +111,31 @@ export class UsersService {
   }
 
   async updateId(id: number, updateUserDto: UpdateUserDto): Promise<void> {
-    const user: User | null = await this.usersRepository.findOneBy({ id });
-    if (user) {
-      if (updateUserDto.credential) {
-        Object.assign(user.credential, updateUserDto.credential);
+    const user: User | null = await this.usersRepository.findOne({ 
+      where: { id: id },
+      relations: ['credential'],
+    });
+    try {
+      if (user) {
+        if (updateUserDto.credential) {
+          Object.assign(user.credential, updateUserDto.credential);
+        }
+        Object.assign(user, updateUserDto.user);
+        await this.usersRepository.save(user);
+      } else {
+        this.logger.warn(`User to update with id:${id} not found`);
+        throw new ErrorUserNotFound();
       }
-      Object.assign(user, updateUserDto.user);
-      await this.usersRepository.save(user);
-    } else {
-      this.logger.warn(`User to update with id:${id} not found`);
-      throw new ErrorUserNotFound();
+      this.logger.log(`User with id:${id} updated`);
+    } catch (error) {
+      if (error.code === '23505') {
+        this.logger.warn(
+          `User with username ${user?.credential.username} already exist`,
+        );
+        throw new ConflictException('User with this username already exist');
+      }
+      throw error;
     }
-    this.logger.log(`User with id:${id} updated`);
   }
 
   async findUserRolebyIdCredential(credentialId: number): Promise<UserRoleDto> {

@@ -23,3 +23,16 @@ export const invalidUserData = {
     email: 'invalid-email', // invalid email
   },
 };
+
+export const userData = {
+  user: {
+    name: 'Ivan',
+    surname: 'Ivanov',
+    age: 21,
+  },
+  credential: {
+    username: 'TestUser13',
+    password: 'Password123!',
+    email: 'n_alena_a@mail.ru',
+  },
+};

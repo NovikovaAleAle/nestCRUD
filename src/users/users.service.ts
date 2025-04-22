@@ -111,7 +111,7 @@ export class UsersService {
   }
 
   async updateId(id: number, updateUserDto: UpdateUserDto): Promise<void> {
-    const user: User | null = await this.usersRepository.findOne({ 
+    const user: User | null = await this.usersRepository.findOne({
       where: { id: id },
       relations: ['credential'],
     });
@@ -128,6 +128,7 @@ export class UsersService {
       }
       this.logger.log(`User with id:${id} updated`);
     } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (error.code === '23505') {
         this.logger.warn(
           `User with username ${user?.credential.username} already exist`,

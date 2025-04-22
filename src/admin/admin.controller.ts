@@ -98,7 +98,9 @@ export class AdminController {
       return 'User updated';
     } catch (error) {
       this.logger.error(`updateUserById, user id:${id}, ${error}`);
-      throw errorsHandler(error as Error | ErrorUserNotFound | ConflictException);
+      throw errorsHandler(
+        error as Error | ErrorUserNotFound | ConflictException,
+      );
     }
   }
 

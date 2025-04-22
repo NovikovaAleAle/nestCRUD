@@ -36,3 +36,8 @@ export const userData = {
     email: 'n_alena_a@mail.ru',
   },
 };
+
+export const userPostData = {
+  title: 'First test post for test',
+  content: 'First test text for test, test text for test, test text for test',
+};

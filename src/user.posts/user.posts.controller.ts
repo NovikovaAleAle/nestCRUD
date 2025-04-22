@@ -167,6 +167,7 @@ export class UserPostsController {
       throw errorsHandler(error as Error | ErrorPostNotFound);
     }
   }
+
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles([Role.USER])
   @ApiOperation({ summary: 'Upload image in the user post' })
@@ -185,7 +186,7 @@ export class UserPostsController {
     },
   })
   @ApiResponse({
-    status: 200,
+    status: 201,
     description: 'Successful upload message',
     type: String,
   })

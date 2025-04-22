@@ -27,6 +27,7 @@ describe('UsersService (unit)', () => {
 
   const mockUsersRepository = {
     save: jest.fn(),
+    findOne: jest.fn(),
     findOneBy: jest.fn(),
     delete: jest.fn(),
     createQueryBuilder: jest.fn().mockReturnValue({
@@ -164,7 +165,7 @@ describe('UsersService (unit)', () => {
 
   describe('updateId', () => {
     it('should update user and credential', async () => {
-      mockUsersRepository.findOneBy.mockResolvedValue(user);
+      mockUsersRepository.findOne.mockResolvedValue(user);
       mockUsersRepository.save.mockResolvedValue({
         ...user,
         ...updateUserDtoTest.user,

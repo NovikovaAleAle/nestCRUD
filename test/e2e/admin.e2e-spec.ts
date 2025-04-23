@@ -1,4 +1,5 @@
 /* eslint-disable 
+  @typescript-eslint/no-unsafe-assignment,
   @typescript-eslint/no-unsafe-member-access
 */
 import { Test, TestingModule } from '@nestjs/testing';
@@ -7,8 +8,6 @@ import * as request from 'supertest';
 import { AdminController } from '../../src/admin/admin.controller';
 import { AdminService } from '../../src/admin/admin.service';
 import { App } from 'supertest/types';
-import { JwtAuthGuard } from '../../src/auth/guards/jwt.auth.guard';
-import { RolesGuard } from '../../src/auth/guards/roles/roles.guard';
 import {
   validUserData,
   invalidUserData,
@@ -29,12 +28,23 @@ import { UsersService } from '../../src/users/users.service';
 import { KafkaService } from '../../src/kafka/kafka.service';
 import { plainToClass } from 'class-transformer';
 import { Role } from '../../src/config/constants';
+import { PassportModule } from '@nestjs/passport';
+import { JwtService } from '@nestjs/jwt';
+import { JwtStrategy } from '../../src/auth/guards/jwt.strategy';
+import { CredentialsService } from '../../src/credentials/credentials.service';
+import { TokenUuidService } from '../../src/token.uuid/token.uuid.service';
+import { AuthService } from '../../src/auth/auth.service';
+import { MailService } from '../../src/mail/mail.service';
+import uuidConfig from '../../src/config/uuid.config';
+import { AuthController } from '../../src/auth/auth.controller';
+import { AppBasicStrategy } from '../../src/auth/guards/basic.strategy';
 
 describe('AdminController (e2e)', () => {
   let app: INestApplication<App>;
   let dataSource: DataSource;
   let usersRepository: Repository<User>;
   let userTest: User;
+  let tokenJwt: string;
 
   const mockKafkaService = {
     sendMessage: jest.fn().mockResolvedValue({}),
@@ -63,9 +73,19 @@ describe('AdminController (e2e)', () => {
           [User, Credential, UserPost],
           'testAdminConnection',
         ),
+        PassportModule,
       ],
-      controllers: [AdminController],
+      controllers: [AdminController, AuthController],
       providers: [
+        JwtStrategy,
+        AppBasicStrategy,
+        {
+          provide: JwtService,
+          useValue: new JwtService({
+            secret: 'testsecret',
+            signOptions: { expiresIn: '3600s' },
+          }),
+        },
         {
           provide: KafkaService,
           useValue: mockKafkaService,
@@ -90,13 +110,55 @@ describe('AdminController (e2e)', () => {
           },
           inject: [UsersService],
         },
+        {
+          provide: CredentialsService,
+          useFactory: (credentialsRepository: Repository<Credential>) => {
+            return new CredentialsService(credentialsRepository);
+          },
+          inject: [getRepositoryToken(Credential, 'testAdminConnection')],
+        },
+        {
+          provide: TokenUuidService,
+          useValue: {},
+        },
+        {
+          provide: MailService,
+          useValue: {},
+        },
+        {
+          provide: uuidConfig.KEY,
+          useValue: {},
+        },
+        {
+          provide: AuthService,
+          useFactory: (
+            credentialsService: CredentialsService,
+            usersService: UsersService,
+            jwtService: JwtService,
+            mailService: MailService,
+            tokenUuidService: TokenUuidService,
+            configUuid: ConfigType<typeof uuidConfig>,
+          ) => {
+            return new AuthService(
+              credentialsService,
+              usersService,
+              jwtService,
+              mailService,
+              tokenUuidService,
+              configUuid,
+            );
+          },
+          inject: [
+            CredentialsService,
+            UsersService,
+            JwtService,
+            MailService,
+            TokenUuidService,
+            uuidConfig.KEY,
+          ],
+        },
       ],
-    })
-      .overrideGuard(JwtAuthGuard)
-      .useValue({ canActivate: () => true })
-      .overrideGuard(RolesGuard)
-      .useValue({ canActivate: () => true })
-      .compile();
+    }).compile();
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -126,6 +188,12 @@ describe('AdminController (e2e)', () => {
     toUser.role = Role.ADMIN;
 
     userTest = await usersRepository.save(toUser);
+
+    const response = await request(app.getHttpServer())
+      .get('/auth/login')
+      .auth(userData.credential.username, userData.credential.password)
+      .send();
+    tokenJwt = response.body.access_token;
   });
 
   afterAll(async () => {
@@ -138,6 +206,7 @@ describe('AdminController (e2e)', () => {
     it('should return user creation message and 201 status on success', async () => {
       await request(app.getHttpServer())
         .post('/admin/users')
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send(validUserData)
         .expect(201, 'User created');
 
@@ -156,6 +225,7 @@ describe('AdminController (e2e)', () => {
     it('should return 409 when user already exists', () => {
       return request(app.getHttpServer())
         .post('/admin/users')
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send(validUserData)
         .expect(409, {
           statusCode: 409,
@@ -167,6 +237,7 @@ describe('AdminController (e2e)', () => {
     it('should return 400 for invalid input data', async () => {
       await request(app.getHttpServer())
         .post('/admin/users')
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send(invalidUserData)
         .expect(400)
         .then((res) => {
@@ -183,6 +254,7 @@ describe('AdminController (e2e)', () => {
       await request(app.getHttpServer())
         .get('/admin/users')
         .query('page=1&take=4')
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(200)
         .then((res) => {
@@ -206,6 +278,7 @@ describe('AdminController (e2e)', () => {
       await request(app.getHttpServer())
         .get('/admin/users')
         .query('page=1&take=2')
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(400)
         .then((res) => {
@@ -219,6 +292,7 @@ describe('AdminController (e2e)', () => {
     it('should return user record and 200 status on success', async () => {
       await request(app.getHttpServer())
         .get('/admin/users/' + userTest.id)
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(200)
         .then((res) => {
@@ -235,6 +309,7 @@ describe('AdminController (e2e)', () => {
     it('should return 404 for non-existent id', () => {
       return request(app.getHttpServer())
         .get('/admin/users/999')
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(404, {
           statusCode: 404,
@@ -256,6 +331,7 @@ describe('AdminController (e2e)', () => {
     it('should return user update message and 200 status on success', async () => {
       await request(app.getHttpServer())
         .patch('/admin/users/' + userTest.id)
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send(updateUserDto)
         .expect(200, 'User updated');
 
@@ -276,6 +352,7 @@ describe('AdminController (e2e)', () => {
       };
       return request(app.getHttpServer())
         .patch('/admin/users/' + userTest.id)
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send(updateUserDto)
         .expect(409, {
           statusCode: 409,
@@ -292,6 +369,7 @@ describe('AdminController (e2e)', () => {
       };
       await request(app.getHttpServer())
         .patch('/admin/users/' + userTest.id)
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send(updateUserInvalidDto)
         .expect(400)
         .then((res) => {
@@ -305,6 +383,7 @@ describe('AdminController (e2e)', () => {
     it('should return 404 for non-existent id', () => {
       return request(app.getHttpServer())
         .patch('/admin/users/999')
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(404, {
           statusCode: 404,
@@ -317,6 +396,7 @@ describe('AdminController (e2e)', () => {
     it('should return successful update role message and 200 status on success', () => {
       return request(app.getHttpServer())
         .get(`/admin/users/${userTest.id}/role`)
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(200, 'User role updated');
     });
@@ -324,6 +404,7 @@ describe('AdminController (e2e)', () => {
     it('should return 404 for non-existent id', () => {
       return request(app.getHttpServer())
         .get(`/admin/users/999/role`)
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(404, {
           statusCode: 404,
@@ -334,6 +415,7 @@ describe('AdminController (e2e)', () => {
     it('should return 409 when user role USER already exists', () => {
       return request(app.getHttpServer())
         .get(`/admin/users/${userTest.id}/role`)
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(409, {
           statusCode: 409,
@@ -346,6 +428,7 @@ describe('AdminController (e2e)', () => {
     it('should return user delete message and 200 status on success', async () => {
       await request(app.getHttpServer())
         .delete('/admin/users/' + userTest.id)
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(200, 'User deleted');
 
@@ -356,6 +439,7 @@ describe('AdminController (e2e)', () => {
     it('should return 404 for non-existent id', () => {
       return request(app.getHttpServer())
         .delete('/admin/users/999')
+        .set('Authorization', 'Bearer ' + tokenJwt)
         .send()
         .expect(404, {
           statusCode: 404,

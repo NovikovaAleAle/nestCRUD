@@ -28,6 +28,7 @@ import { DataSource, Repository } from 'typeorm';
 import { UsersService } from '../../src/users/users.service';
 import { KafkaService } from '../../src/kafka/kafka.service';
 import { plainToClass } from 'class-transformer';
+import { Role } from '../../src/config/constants';
 
 describe('AdminController (e2e)', () => {
   let app: INestApplication<App>;
@@ -122,6 +123,7 @@ describe('AdminController (e2e)', () => {
       excludeExtraneousValues: true,
     });
     toUser.credential = toCredential;
+    toUser.role = Role.ADMIN;
 
     userTest = await usersRepository.save(toUser);
   });
@@ -151,8 +153,8 @@ describe('AdminController (e2e)', () => {
       expect(user?.role).toBe('user');
     });
 
-    it('should return 409 when user already exists', async () => {
-      await request(app.getHttpServer())
+    it('should return 409 when user already exists', () => {
+      return request(app.getHttpServer())
         .post('/admin/users')
         .send(validUserData)
         .expect(409, {
@@ -178,7 +180,7 @@ describe('AdminController (e2e)', () => {
 
   describe('GET admin/users', () => {
     it('should return records according to pagination parameters and 200 status on success', async () => {
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/admin/users')
         .query('page=1&take=4')
         .send()
@@ -201,7 +203,7 @@ describe('AdminController (e2e)', () => {
     });
 
     it('should return 400 for invalid input data in query', async () => {
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/admin/users')
         .query('page=1&take=2')
         .send()
@@ -215,7 +217,7 @@ describe('AdminController (e2e)', () => {
 
   describe('GET admin/users/:id', () => {
     it('should return user record and 200 status on success', async () => {
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/admin/users/' + userTest.id)
         .send()
         .expect(200)
@@ -230,8 +232,8 @@ describe('AdminController (e2e)', () => {
         });
     });
 
-    it('should return 404 for non-existent id', async () => {
-      await request(app.getHttpServer())
+    it('should return 404 for non-existent id', () => {
+      return request(app.getHttpServer())
         .get('/admin/users/999')
         .send()
         .expect(404, {
@@ -266,13 +268,13 @@ describe('AdminController (e2e)', () => {
       expect(user?.credential.username).toEqual('UpdateTest');
     });
 
-    it('should return 409 when update username already exists', async () => {
+    it('should return 409 when update username already exists', () => {
       const updateUserDto = {
         credential: {
           username: 'TestValidUser',
         },
       };
-      await request(app.getHttpServer())
+      return request(app.getHttpServer())
         .patch('/admin/users/' + userTest.id)
         .send(updateUserDto)
         .expect(409, {
@@ -300,8 +302,8 @@ describe('AdminController (e2e)', () => {
         });
     });
 
-    it('should return 404 for non-existent id', async () => {
-      await request(app.getHttpServer())
+    it('should return 404 for non-existent id', () => {
+      return request(app.getHttpServer())
         .patch('/admin/users/999')
         .send()
         .expect(404, {
@@ -312,15 +314,15 @@ describe('AdminController (e2e)', () => {
   });
 
   describe('GET admin/users/:id/role', () => {
-    it('should return successful update role message and 200 status on success', async () => {
-      await request(app.getHttpServer())
+    it('should return successful update role message and 200 status on success', () => {
+      return request(app.getHttpServer())
         .get(`/admin/users/${userTest.id}/role`)
         .send()
         .expect(200, 'User role updated');
     });
 
-    it('should return 404 for non-existent id', async () => {
-      await request(app.getHttpServer())
+    it('should return 404 for non-existent id', () => {
+      return request(app.getHttpServer())
         .get(`/admin/users/999/role`)
         .send()
         .expect(404, {
@@ -329,8 +331,8 @@ describe('AdminController (e2e)', () => {
         });
     });
 
-    it('should return 409 when user role USER already exists', async () => {
-      await request(app.getHttpServer())
+    it('should return 409 when user role USER already exists', () => {
+      return request(app.getHttpServer())
         .get(`/admin/users/${userTest.id}/role`)
         .send()
         .expect(409, {
@@ -351,8 +353,8 @@ describe('AdminController (e2e)', () => {
       expect(user).toBeNull();
     });
 
-    it('should return 404 for non-existent id', async () => {
-      await request(app.getHttpServer())
+    it('should return 404 for non-existent id', () => {
+      return request(app.getHttpServer())
         .delete('/admin/users/999')
         .send()
         .expect(404, {

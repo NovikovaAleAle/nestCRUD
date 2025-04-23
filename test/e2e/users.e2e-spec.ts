@@ -153,8 +153,8 @@ describe('UsersController (e2e)', () => {
       }
     });
 
-    it('should return 409 when user already exists', async () => {
-      await request(app.getHttpServer())
+    it('should return 409 when user already exists', () => {
+      return request(app.getHttpServer())
         .post('/users/register')
         .send(validUserData)
         .expect(409, {
@@ -165,7 +165,7 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should return 400 for invalid input data', async () => {
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/users/register')
         .send(invalidUserData)
         .expect(400)

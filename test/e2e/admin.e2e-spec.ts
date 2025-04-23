@@ -29,7 +29,7 @@ import { UsersService } from '../../src/users/users.service';
 import { KafkaService } from '../../src/kafka/kafka.service';
 import { plainToClass } from 'class-transformer';
 
-describe.skip('AdminController (e2e)', () => {
+describe('AdminController (e2e)', () => {
   let app: INestApplication<App>;
   let dataSource: DataSource;
   let usersRepository: Repository<User>;
@@ -126,10 +126,6 @@ describe.skip('AdminController (e2e)', () => {
     userTest = await usersRepository.save(toUser);
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   afterAll(async () => {
     await dataSource.dropDatabase();
     await dataSource.destroy();
@@ -171,9 +167,11 @@ describe.skip('AdminController (e2e)', () => {
         .post('/admin/users')
         .send(invalidUserData)
         .expect(400)
-        .then(({ body }: request.Response) => {
-          expect(body).toHaveProperty('message');
-          expect(body.message).toContain('credential.email must be an email');
+        .then((res) => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toContain(
+            'credential.email must be an email',
+          );
         });
     });
   });
@@ -185,15 +183,15 @@ describe.skip('AdminController (e2e)', () => {
         .query('page=1&take=4')
         .send()
         .expect(200)
-        .then(({ body }: request.Response) => {
-          expect(body.data).toHaveLength(2);
-          expect(body.data[1]).toEqual({
+        .then((res) => {
+          expect(res.body.data).toHaveLength(2);
+          expect(res.body.data[1]).toEqual({
             id: 2,
             name: 'Ivan',
             surname: 'Ivanov',
             age: 21,
           });
-          expect(body.meta).toEqual({
+          expect(res.body.meta).toEqual({
             totalItemCount: 2,
             page: 1,
             take: 4,
@@ -208,9 +206,9 @@ describe.skip('AdminController (e2e)', () => {
         .query('page=1&take=2')
         .send()
         .expect(400)
-        .then(({ body }: request.Response) => {
-          expect(body).toHaveProperty('message');
-          expect(body.message).toContain('take must not be less than 3');
+        .then((res) => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toContain('take must not be less than 3');
         });
     });
   });
@@ -221,9 +219,9 @@ describe.skip('AdminController (e2e)', () => {
         .get('/admin/users/' + userTest.id)
         .send()
         .expect(200)
-        .then(({ body }: request.Response) => {
-          expect(body).not.toBeNull();
-          expect(body).toEqual({
+        .then((res) => {
+          expect(res.body).not.toBeNull();
+          expect(res.body).toEqual({
             id: 1,
             name: 'Ivan',
             surname: 'Ivanov',
@@ -233,7 +231,7 @@ describe.skip('AdminController (e2e)', () => {
     });
 
     it('should return 404 for non-existent id', async () => {
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/admin/users/999')
         .send()
         .expect(404, {
@@ -294,9 +292,9 @@ describe.skip('AdminController (e2e)', () => {
         .patch('/admin/users/' + userTest.id)
         .send(updateUserInvalidDto)
         .expect(400)
-        .then(({ body }: request.Response) => {
-          expect(body).toHaveProperty('message');
-          expect(body.message).toContain(
+        .then((res) => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toContain(
             'user.name must match /^[a-zA-Z -]{3,20}$/ regular expression',
           );
         });

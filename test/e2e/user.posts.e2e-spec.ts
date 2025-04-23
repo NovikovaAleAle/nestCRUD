@@ -146,10 +146,6 @@ describe('UserPostsController (e2e)', () => {
     postTest = await userPostsRepository.save(toUserPost);
   });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
   afterAll(async () => {
     await dataSource.dropDatabase();
     await dataSource.destroy();
@@ -194,9 +190,9 @@ describe('UserPostsController (e2e)', () => {
         .post(`/users/${userTest.id}/posts`)
         .send({ ...validUserPostData, title: 134465676587899 })
         .expect(400)
-        .then(({ body }: request.Response) => {
-          expect(body).toHaveProperty('message');
-          expect(body.message).toContain('title must be a string');
+        .then((res) => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toContain('title must be a string');
         });
     });
   });
@@ -208,16 +204,16 @@ describe('UserPostsController (e2e)', () => {
         .query('page=1&take=4')
         .send()
         .expect(200)
-        .then(({ body }: request.Response) => {
-          expect(body.data).toHaveLength(2);
-          expect(body.data[1]).toEqual({
+        .then((res) => {
+          expect(res.body.data).toHaveLength(2);
+          expect(res.body.data[1]).toEqual({
             id: 2,
             title: 'Test post for test',
             content:
               'test text for test, test text for test, test text for test',
             image: null,
           });
-          expect(body.meta).toEqual({
+          expect(res.body.meta).toEqual({
             totalItemCount: 2,
             page: 1,
             take: 4,
@@ -232,9 +228,9 @@ describe('UserPostsController (e2e)', () => {
         .query('page=1&take=2')
         .send()
         .expect(400)
-        .then(({ body }: request.Response) => {
-          expect(body).toHaveProperty('message');
-          expect(body.message).toContain('take must not be less than 3');
+        .then((res) => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toContain('take must not be less than 3');
         });
     });
   });
@@ -245,9 +241,9 @@ describe('UserPostsController (e2e)', () => {
         .get(`/users/${userTest.id}/posts/${postTest.id}`)
         .send()
         .expect(200)
-        .then(({ body }: request.Response) => {
-          expect(body).not.toBeNull();
-          expect(body).toEqual({
+        .then((res) => {
+          expect(res.body).not.toBeNull();
+          expect(res.body).toEqual({
             id: 1,
             title: 'First test post for test',
             content:
@@ -284,9 +280,9 @@ describe('UserPostsController (e2e)', () => {
         .patch(`/users/${userTest.id}/posts/${postTest.id}`)
         .send({ ...updateUserPostData, title: 45674448903454 })
         .expect(400)
-        .then(({ body }: request.Response) => {
-          expect(body).toHaveProperty('message');
-          expect(body.message).toContain('title must be a string');
+        .then((res) => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toContain('title must be a string');
         });
     });
 

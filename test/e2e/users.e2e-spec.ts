@@ -1,3 +1,6 @@
+/* eslint-disable 
+  @typescript-eslint/no-unsafe-member-access
+*/
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { MailService } from '../../src/mail/mail.service';
 import { App } from 'supertest/types';
@@ -117,13 +120,12 @@ describe('UsersController (e2e)', () => {
     await app.close();
   });
 
-  describe.skip('POST /users/register', () => {
+  describe('POST /users/register', () => {
     it('should return confirmation message and 201 status on success', async () => {
       await request(app.getHttpServer())
         .post('/users/register')
         .send(validUserData)
-        .expect(201)
-        .expect('Complete registration with email confirmation');
+        .expect(201, 'Complete registration with email confirmation');
 
       const user = await usersRepository.findOne({
         where: {
@@ -152,29 +154,27 @@ describe('UsersController (e2e)', () => {
     });
 
     it('should return 409 when user already exists', async () => {
-      const response = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/users/register')
         .send(validUserData)
-        .expect(409);
-
-      expect(response.body).toEqual({
-        statusCode: 409,
-        message: 'User with this username already exist',
-        error: 'Conflict',
-      });
+        .expect(409, {
+          statusCode: 409,
+          message: 'User with this username already exist',
+          error: 'Conflict',
+        });
     });
 
     it('should return 400 for invalid input data', async () => {
-      const response = await request(app.getHttpServer())
+      return request(app.getHttpServer())
         .post('/users/register')
         .send(invalidUserData)
-        .expect(400);
-
-      expect(response.body).toHaveProperty('message');
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      expect(response.body.message).toContain(
-        'credential.email must be an email',
-      );
+        .expect(400)
+        .then((res) => {
+          expect(res.body).toHaveProperty('message');
+          expect(res.body.message).toContain(
+            'credential.email must be an email',
+          );
+        });
     });
   });
 });

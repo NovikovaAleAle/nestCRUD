@@ -16,7 +16,6 @@ import { Request } from 'express';
 import { TokenDto } from '../dto/output.dto/token.dto';
 import { InputUuidDto } from '../dto/input.dto/input.uuid.dto';
 import { errorsHandler } from '../error/errors.handler';
-import { ErrorCredentialNotFound } from '../error/error.credential-not-found';
 import { ErrorEmailNotSent } from '../error/error.email-not-sent';
 
 @Controller('auth')
@@ -44,10 +43,10 @@ export class AuthController {
     }
   }
 
-  @ApiOperation({ summary: 'Сredential confirmation at the link' })
+  @ApiOperation({ summary: 'Credential confirmation at the link' })
   @ApiResponse({
     status: 200,
-    description: 'Сredential confirmation message',
+    description: 'Credential confirmation message',
     type: String,
   })
   @Get('confirm')
@@ -58,18 +57,14 @@ export class AuthController {
     } catch (error) {
       this.logger.error(error);
       throw errorsHandler(
-        error as
-          | Error
-          | ErrorCredentialNotFound
-          | BadRequestException
-          | ConflictException,
+        error as Error | BadRequestException | ConflictException,
       );
     }
   }
 
   @UseGuards(BasicAuthGuard)
   @ApiBasicAuth()
-  @ApiOperation({ summary: 'Сredential reconfirmation at the link' })
+  @ApiOperation({ summary: 'Credential reconfirmation at the link' })
   @ApiResponse({
     status: 200,
     description: 'Message about the need to confirm registration',

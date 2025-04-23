@@ -31,7 +31,20 @@ export const userData = {
     age: 21,
   },
   credential: {
-    username: 'TestUser13',
+    username: 'TestUser',
+    password: 'Password123!',
+    email: 'n_alena_a@mail.ru',
+  },
+};
+
+export const userTwoData = {
+  user: {
+    name: 'Ivan',
+    surname: 'Ivanov',
+    age: 21,
+  },
+  credential: {
+    username: 'TestUserTwo',
     password: 'Password123!',
     email: 'n_alena_a@mail.ru',
   },

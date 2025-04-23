@@ -175,8 +175,8 @@ describe('UserPostsController (e2e)', () => {
       });
     });
 
-    it('should return 404 for non-existent id user', async () => {
-      await request(app.getHttpServer())
+    it('should return 404 for non-existent id user', () => {
+      return request(app.getHttpServer())
         .post('/users/999/posts')
         .send(validUserPostData)
         .expect(404, {
@@ -199,7 +199,7 @@ describe('UserPostsController (e2e)', () => {
 
   describe('GET users/:id/posts', () => {
     it('should return records according to pagination parameters and 200 status on success', async () => {
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get(`/users/${userTest.id}/posts`)
         .query('page=1&take=4')
         .send()
@@ -223,7 +223,7 @@ describe('UserPostsController (e2e)', () => {
     });
 
     it('should return 400 for invalid input data in query', async () => {
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get(`/users/${userTest.id}/posts`)
         .query('page=1&take=2')
         .send()
@@ -237,7 +237,7 @@ describe('UserPostsController (e2e)', () => {
 
   describe('GET users/:id/posts/:idpost', () => {
     it('should return post record and 200 status on sucess', async () => {
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get(`/users/${userTest.id}/posts/${postTest.id}`)
         .send()
         .expect(200)
@@ -253,7 +253,7 @@ describe('UserPostsController (e2e)', () => {
         });
     });
 
-    it('should return 404 for non-existent id', async () => {
+    it('should return 404 for non-existent id', () => {
       return request(app.getHttpServer())
         .get(`/users/${userTest.id}/posts/999`)
         .send()
@@ -268,8 +268,8 @@ describe('UserPostsController (e2e)', () => {
     const updateUserPostData = {
       title: 'Update title for the post',
     };
-    it('should return message to update the post and 200 status on success', async () => {
-      await request(app.getHttpServer())
+    it('should return message to update the post and 200 status on success', () => {
+      return request(app.getHttpServer())
         .patch(`/users/${userTest.id}/posts/${postTest.id}`)
         .send(updateUserPostData)
         .expect(200, 'Post updated');
@@ -286,8 +286,8 @@ describe('UserPostsController (e2e)', () => {
         });
     });
 
-    it('should return 404 for non-existent id', async () => {
-      await request(app.getHttpServer())
+    it('should return 404 for non-existent id', () => {
+      return request(app.getHttpServer())
         .patch(`/users/${userTest.id}/posts/999`)
         .send(updateUserPostData)
         .expect(404, {
@@ -341,14 +341,14 @@ describe('UserPostsController (e2e)', () => {
         });
     });
 
-    it('should return 400 if no file uploaded', async () => {
-      await request(app.getHttpServer())
+    it('should return 400 if no file uploaded', () => {
+      return request(app.getHttpServer())
         .post(`/users/${userTest.id}/posts/${postTest.id}`)
         .expect(400);
     });
 
-    it('should return 404 for non-existent post id', async () => {
-      await request(app.getHttpServer())
+    it('should return 404 for non-existent post id', () => {
+      return request(app.getHttpServer())
         .post(`/users/${userTest.id}/posts/999`)
         .attach('image', Buffer.from('test'), 'test.png')
         .expect(404, {
@@ -371,8 +371,8 @@ describe('UserPostsController (e2e)', () => {
       expect(post?.image).toBeNull();
     });
 
-    it('should return 409 if image non-existent', async () => {
-      await request(app.getHttpServer())
+    it('should return 409 if image non-existent', () => {
+      return request(app.getHttpServer())
         .delete(`/users/${userTest.id}/posts/${postTest.id}/image`)
         .send()
         .expect(409, {
@@ -382,8 +382,8 @@ describe('UserPostsController (e2e)', () => {
         });
     });
 
-    it('should return 404 for non-existent post id', async () => {
-      await request(app.getHttpServer())
+    it('should return 404 for non-existent post id', () => {
+      return request(app.getHttpServer())
         .delete(`/users/${userTest.id}/posts/999/image`)
         .send()
         .expect(404, {
@@ -406,8 +406,8 @@ describe('UserPostsController (e2e)', () => {
       expect(post).toBeNull();
     });
 
-    it('should return 404 for non-existent post id', async () => {
-      await request(app.getHttpServer())
+    it('should return 404 for non-existent post id', () => {
+      return request(app.getHttpServer())
         .delete(`/users/${userTest.id}/posts/999`)
         .send()
         .expect(404, {

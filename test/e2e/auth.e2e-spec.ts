@@ -204,7 +204,7 @@ describe('AuthController (e2e)', () => {
     it('should return JWT token and 200 status on success', async () => {
       const username = userData.credential.username;
       const password = userData.credential.password;
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/auth/login')
         .auth(username, password)
         .expect(200)
@@ -216,10 +216,10 @@ describe('AuthController (e2e)', () => {
         });
     });
 
-    it('should return 401 Unauthorized if invalid data in login', async () => {
+    it('should return 401 Unauthorized if invalid data in login', () => {
       const username = 'InvalidTestUser';
       const password = userData.credential.password;
-      await request(app.getHttpServer())
+      return request(app.getHttpServer())
         .get('/auth/login')
         .auth(username, password)
         .expect(401, {
@@ -228,10 +228,10 @@ describe('AuthController (e2e)', () => {
         });
     });
 
-    it('should return 401 Unauthorized if invalid data in password', async () => {
+    it('should return 401 Unauthorized if invalid data in password', () => {
       const username = userData.credential.username;
       const password = '123';
-      await request(app.getHttpServer())
+      return request(app.getHttpServer())
         .get('/auth/login')
         .auth(username, password)
         .expect(401, {
@@ -240,7 +240,7 @@ describe('AuthController (e2e)', () => {
         });
     });
 
-    it('should return 401 Unauthorized for non-existent data in authorization header', async () => {
+    it('should return 401 Unauthorized for non-existent data in authorization header', () => {
       return request(app.getHttpServer())
         .get('/auth/login')
         .send()
@@ -270,8 +270,8 @@ describe('AuthController (e2e)', () => {
       expect(userConfirm?.role).toEqual('user');
     });
 
-    it('should return 409 Conflict if user already confirmed', async () => {
-      await request(app.getHttpServer())
+    it('should return 409 Conflict if user already confirmed', () => {
+      return request(app.getHttpServer())
         .get('/auth/confirm')
         .query('uuid=' + userFirst.token.uuid)
         .send()
@@ -282,16 +282,16 @@ describe('AuthController (e2e)', () => {
         });
     });
 
-    it('should return 400 Bad request for invalid token', async () => {
-      await request(app.getHttpServer())
+    it('should return 400 Bad request for invalid token', () => {
+      return request(app.getHttpServer())
         .get('/auth/confirm')
         .query('uuid=1234-4567')
         .send()
         .expect(400);
     });
 
-    it('should return 400 Bad request for non-existent uuid in query', async () => {
-      await request(app.getHttpServer())
+    it('should return 400 Bad request for non-existent uuid in query', () => {
+      return request(app.getHttpServer())
         .get('/auth/confirm')
         .send()
         .expect(400);
@@ -299,20 +299,20 @@ describe('AuthController (e2e)', () => {
   });
 
   describe('GET auth/reconfirm', () => {
-    it('return message about the need to confirm registration and 200 status on success', async () => {
+    it('return message about the need to confirm registration and 200 status on success', () => {
       const username = userTwoData.credential.username;
       const password = userTwoData.credential.password;
-      await request(app.getHttpServer())
+      return request(app.getHttpServer())
         .get('/auth/reconfirm')
         .auth(username, password)
         .send()
         .expect(200, 'Complete registration with email confirmation');
     });
 
-    it('should return 409 Conflict if user already confirmed', async () => {
+    it('should return 409 Conflict if user already confirmed', () => {
       const username = userData.credential.username;
       const password = userData.credential.password;
-      await request(app.getHttpServer())
+      return request(app.getHttpServer())
         .get('/auth/reconfirm')
         .auth(username, password)
         .send()
@@ -323,8 +323,8 @@ describe('AuthController (e2e)', () => {
         });
     });
 
-    it('should return 401 Unauthorized for non-existent data in authorization header', async () => {
-      await request(app.getHttpServer())
+    it('should return 401 Unauthorized for non-existent data in authorization header', () => {
+      return request(app.getHttpServer())
         .get('/auth/reconfirm')
         .send()
         .expect(401, {

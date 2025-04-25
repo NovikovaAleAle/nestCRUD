@@ -20,10 +20,11 @@ export const parseIntEnv = (nameEnv: string): number => {
 
 export const parseBooleanEnv = (nameEnv: string): boolean => {
   const valueStr: string = envIsExist(nameEnv);
-  if (valueStr === 'true') {
+  const lowerCaseValueStr: string = valueStr.toLocaleLowerCase();
+  if (lowerCaseValueStr === 'true') {
     return true;
   }
-  if (valueStr === 'false') {
+  if (lowerCaseValueStr=== 'false') {
     return false;
   }
   throw new Error(`Invalid env ${nameEnv}`);

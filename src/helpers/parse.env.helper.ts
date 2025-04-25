@@ -24,7 +24,7 @@ export const parseBooleanEnv = (nameEnv: string): boolean => {
   if (lowerCaseValueStr === 'true') {
     return true;
   }
-  if (lowerCaseValueStr=== 'false') {
+  if (lowerCaseValueStr === 'false') {
     return false;
   }
   throw new Error(`Invalid env ${nameEnv}`);

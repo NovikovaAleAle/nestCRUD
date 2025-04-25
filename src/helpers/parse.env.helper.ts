@@ -20,7 +20,7 @@ export const parseIntEnv = (nameEnv: string): number => {
 
 export const parseBooleanEnv = (nameEnv: string): boolean => {
   const valueStr: string = envIsExist(nameEnv);
-  const lowerCaseValueStr: string = valueStr.toLocaleLowerCase();
+  const lowerCaseValueStr: string = valueStr.toLowerCase();
   if (lowerCaseValueStr === 'true') {
     return true;
   }

@@ -42,7 +42,7 @@ export class UsersController {
       this.logger.log(`Confirmation email sent user id:${userId}`);
       return 'Complete registration with email confirmation';
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`create, ${error}`);
       throw errorsHandler(
         error as Error | ConflictException | ErrorEmailNotSent,
       );

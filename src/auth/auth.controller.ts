@@ -55,7 +55,7 @@ export class AuthController {
       await this.authService.confirm(inputUuid);
       return 'Email confirm';
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`confirm, ${error}`);
       throw errorsHandler(
         error as Error | BadRequestException | ConflictException,
       );
@@ -79,7 +79,7 @@ export class AuthController {
       await this.authService.reconfirm(req.user);
       return 'Complete registration with email confirmation';
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(`reconfirm, ${error}`);
       throw errorsHandler(
         error as Error | ConflictException | ErrorEmailNotSent,
       );

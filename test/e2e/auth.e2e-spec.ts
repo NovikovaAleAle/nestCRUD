@@ -46,6 +46,8 @@ describe('AuthController (e2e)', () => {
   let tokenUuidRepository: Repository<TokenUuid>;
   let userFirst: TestData;
 
+  jest.useRealTimers();
+
   const mockKafkaService = {};
   const mockUuidConfig = {
     uuidLifeTime: 43200000,

@@ -33,6 +33,8 @@ describe('UsersController (e2e)', () => {
   let usersRepository: Repository<User>;
   let credentialsRepository: Repository<Credential>;
 
+  jest.useRealTimers();
+
   const mockKafkaService = {
     sendMessage: jest.fn().mockResolvedValue({}),
   };
